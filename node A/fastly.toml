@@ -1,0 +1,9 @@
+# This file describes a Fastly Compute@Edge package. To learn more visit:
+# https://developer.fastly.com/reference/fastly-toml/
+
+authors = ["djiar@kth.se"]
+description = "Node A"
+language = "javascript"
+manifest_version = 2
+name = "node A"
+service_id = "5eHwYX0aCSNZsrJ1gNJXbu"
