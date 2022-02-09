@@ -2,5 +2,5 @@
 Building: `$ fastly compute build`
 Deploying: `$ fastly compute deploy`
 
-# Scenarios
-Browse branches to see scenarios
+# Tick Tock
+Inspired by https://github.com/monperrus/travis-metronome/
