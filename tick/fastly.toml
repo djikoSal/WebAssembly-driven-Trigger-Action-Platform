@@ -1,0 +1,9 @@
+# This file describes a Fastly Compute@Edge package. To learn more visit:
+# https://developer.fastly.com/reference/fastly-toml/
+
+authors = ["djiar@kth.se"]
+description = "Starting service for tick-tock"
+language = "javascript"
+manifest_version = 2
+name = "tick"
+service_id = "7ZyW1fgdFoXPtlMGN9geAU"
