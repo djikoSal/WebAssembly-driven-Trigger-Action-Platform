@@ -1,9 +1,0 @@
-# This file describes a Fastly Compute@Edge package. To learn more visit:
-# https://developer.fastly.com/reference/fastly-toml/
-
-authors = ["djiar@kth.se"]
-description = "Returns binary number"
-language = "javascript"
-manifest_version = 2
-name = "node B"
-service_id = "3GUdYbG1xwiXRGe97ACfpT"

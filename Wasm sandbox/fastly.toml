@@ -1,9 +1,0 @@
-# This file describes a Fastly Compute@Edge package. To learn more visit:
-# https://developer.fastly.com/reference/fastly-toml/
-
-authors = ["djiar@kth.se"]
-description = "Testing fastly CLI"
-language = "javascript"
-manifest_version = 2
-name = "wasm_sandbox"
-service_id = "7VXLiHE8FM4PMNe3geY7Dh"
