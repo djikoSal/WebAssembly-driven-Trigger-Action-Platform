@@ -1,9 +1,0 @@
-# This file describes a Fastly Compute@Edge package. To learn more visit:
-# https://developer.fastly.com/reference/fastly-toml/
-
-authors = ["djiar@kth.se"]
-description = "This service is polled every 15 minutes by cron-job.org"
-language = "javascript"
-manifest_version = 2
-name = "TAP cron job"
-service_id = "2Lq3wsbbHy5tvismPa0rkZ"
