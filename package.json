@@ -1,0 +1,29 @@
+{
+  "name": "prototype",
+  "version": "1.0.0",
+  "description": "Prototype TAP that runs multiple runtimes, with the purpose of experimenting and obtaining empirical results when comparing Wasm vs. JavaScript runtimes",
+  "main": "index.js",
+  "scripts": {
+    "test": "node tests",
+    "asc": "asc",
+    "start": "node index.js",
+    "deploy:copy": "node -e \"require('fs').copyFile(process.argv[1], `filter_code_assemblyscript/${process.argv[2]}.ts`, (err) => err ? console.log('err found: ' + err) : console.log('AssemblyScript version saved'))\"",
+    "deploy:compile": "asc %npm_config_src% -b filter_code_wasm/%npm_config_id%.wasm --",
+    "deploy": "npm run deploy:copy %npm_config_src% %npm_config_id% -- && npm run deploy:compile --"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/djikoSal/fastly-IoT-Wasm.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/djikoSal/fastly-IoT-Wasm/issues"
+  },
+  "homepage": "https://github.com/djikoSal/fastly-IoT-Wasm#readme",
+  "dependencies": {
+    "as-wasi": "^0.4.6",
+    "assemblyscript": "^0.19.23"
+  },
+  "devDependencies": {}
+}
