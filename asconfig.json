@@ -1,5 +1,8 @@
 {
   "targets": {
+    "deploy": {
+      "sourceMape": false
+    },
     "debug": {
       "binaryFile": "build/untouched.wasm",
       "textFile": "build/untouched.wat",

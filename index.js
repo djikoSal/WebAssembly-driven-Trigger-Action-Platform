@@ -1,5 +1,9 @@
-console.log("The platform can't be run yet.");
-/*const express = require('express')
+/**
+ ** Fix the assemblyscript (finding the papers)
+ ** We do 'inspect element'/ profiling (look at machine code?)
+ ** Mem in wasm vs. js
+ */
+/*
 const app = express()
 const port = 3000
 
@@ -8,5 +12,6 @@ app.get('/', (req, res) => {
 })
 
 app.listen(port, () => {
-    console.log(`Example app listening on port ${port}`)
-}) */
+    console.log(`Protoype server now serving at port ${port}`)
+})
+*/
