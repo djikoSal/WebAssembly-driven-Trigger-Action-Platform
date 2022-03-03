@@ -1,4 +1,3 @@
-// node .\deploy.js .\checkHour.txt checkHour sendSMS skipAction currentHour
 var y = currentHour();
 var x = 13;
 if (y == x) {
