@@ -24,7 +24,8 @@
   "dependencies": {
     "@deislabs/wasm-linker-js": "^0.2.1",
     "as-wasi": "^0.4.6",
-    "assemblyscript": "^0.19.23"
+    "assemblyscript": "^0.19.23",
+    "express": "^4.17.3"
   },
   "devDependencies": {
     "ts-node": "^10.5.0",

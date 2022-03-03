@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Wasm x IoT - Trigger-action platform</title>
+    <script>
+        function loadServices() {
+            const servicesCheckbox = document.getElementById('servicesCheckbox');
+            fetch('/services/all').then((res) => {
+                return res.json();
+            }).then((services) => {
+                services.forEach((serviceName) => {
+                    let chkBox = document.createElement('input');
+                    chkBox.setAttribute('id', `service-${serviceName}`);
+                    chkBox.setAttribute('type', 'checkbox')
+                    servicesCheckbox.append(chkBox);
+                    servicesCheckbox.append(document.createTextNode(serviceName));
+                    servicesCheckbox.append(document.createElement('br'));
+                });
+            });
+        }
+        function tabForIndent(event) { // tab for indent
+            if (event.keyCode === 9) {
+                var v = event.target.value,
+                    s = event.target.selectionStart,
+                    e = event.target.selectionEnd;
+                event.target.value = v.substring(0, s) + '\t' + v.substring(e);
+                event.target.selectionStart = event.target.selectionEnd = s + 1;
+                event.preventDefault();
+                return false;
+            }
+            return true;
+        }
+        function onClick() {
+            const filterCodeId = document.getElementById('filterCodeId').value;
+            const fitlerCodeSrc = document.getElementById('filterCode').value;
+            const userName = document.getElementById('userName').value;
+            var usedServices = [];
+            document.getElementById('servicesCheckbox').childNodes.forEach(child => {
+                if (child.type == 'checkbox' && child.checked)
+                    usedServices.push(child.id.split('-')[1]);
+            });
+            console.log('services: ' + usedServices);
+            const url = `/deploy?filterCodeId=${filterCodeId}&filterCode=${fitlerCodeSrc}&userName=${userName}&services=${JSON.stringify(usedServices)}`;
+            const source = new EventSource(url);
+            const outputTextarea = document.getElementById('outputTextarea');
+            outputTextarea.value += `\nInitiated output console @ ${new Date()}\n\n`;
+            outputTextarea.scrollTop = outputTextarea.scrollHeight;
+            const btn = document.getElementById('deployBtn');
+            source.onmessage = (message) => {
+                console.log(`Received an event!`);
+                if (message.data) {
+                    outputTextarea.value += `$ ${message.data}\n`;
+                    outputTextarea.scrollTop = outputTextarea.scrollHeight;
+                }
+            };
+            source.onerror = (e) => {
+                console.log('eventsource failed, closing it.');
+                outputTextarea.value += '\nOutput console terminated.\n';
+                outputTextarea.scrollTop = outputTextarea.scrollHeight;
+                btn.removeAttribute('disabled');
+                source.close();
+            };
+            btn.setAttribute('disabled', '');
+        }
+    </script>
+</head>
+
+<body onload="loadServices()">
+    Filter code ID: <input type="text" placeholder="filterCodeId..." name="filterCodeId" id="filterCodeId" />
+    User: <input type="text" placeholder="userName..." name="userName" id="userName" />
+    <button id="deployBtn" onclick="onClick()">Deploy</button>
+    <br />
+    <textarea onkeydown="tabForIndent(event)" placeholder="Your code here..." id="filterCode" name="filterCode"
+        rows="20" cols="50"></textarea>
+    <div id="servicesCheckbox" style="display: inline-block;">
+        <h2>Services</h2>
+    </div>
+    <br />
+    <label>Output: </label> <br />
+    <textarea disabled cols="80" rows="12" style=" color: white; background-color: black;"
+        id="outputTextarea"></textarea>
+</body>
+
+</html>
