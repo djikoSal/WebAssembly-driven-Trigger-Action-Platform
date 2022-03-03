@@ -75,7 +75,7 @@ function _postTranspileClean(jsPth, services) {
     services.forEach((serviceName) => {
         if (!(serviceName in serviceAPIs))
             throw Error(`The service ${serviceName} could not be found`);
-        filterCodeJS += `${serviceName} = require("../services/API").${serviceName}\n`
+        filterCodeJS += `const ${serviceName} = require("../services/API").${serviceName}\n`
     })
     filterCodeJS += `${functionCode}\n`;
     filterCodeJS += 'exports.filterCode = filterCode\n';

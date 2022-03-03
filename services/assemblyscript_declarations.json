@@ -1,6 +1,6 @@
 {
     "currentHour": "declare function currentHour(): number;",
     "skipAction": "declare function skipAction(): void;",
-    "sendSMS": "declare function sendSMS(): number;",
+    "sendSMS": "declare function sendSMS(): void;",
     "sendEmail": "declare function sendEmail(): void;"
 }
