@@ -1,7 +1,7 @@
 // Insert some imports here that the filter code needs
-sendSMS = require("../services/API").sendSMS
-skipAction = require("../services/API").skipAction
-currentHour = require("../services/API").currentHour
+const currentHour = require("../services/API").currentHour
+const skipAction = require("../services/API").skipAction
+const sendSMS = require("../services/API").sendSMS
 function filterCode() {
     var y = currentHour();
     var x = 13;
