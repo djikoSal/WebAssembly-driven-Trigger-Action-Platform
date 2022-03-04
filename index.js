@@ -18,12 +18,7 @@ app.get('/submitPage', (req, res) => {
 })
 
 function childProcessResponse(res, command, flags) {
-    /*childProcessResponse({
-    end: (s) => console.log("ended w. " + s),
-    write: (s) => console.log("writing s: " + s),
-    flushHeaders: () => null,
-    setHeader: (s) => null,
-}, 'ping', ['-c', '100', '127.0.0.1']);*/
+    //* Creates a childprocess for the command and will send data line by line (appropriate as event source)
     res.setHeader('Cache-Control', 'no-cache');
     res.setHeader('Content-Type', 'text/event-stream');
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -44,7 +39,9 @@ function childProcessResponse(res, command, flags) {
     });
 
     spw.stderr.on('data', function (errData) {
-        res.end('stderr: ' + errData);
+        if (!res.writableEnded) {
+            res.end('stderr: ' + errData);
+        }
     });
 }
 
@@ -83,6 +80,28 @@ app.get('/services/all', (req, res) => {
 
 app.get('/', (req, res) => {
     res.send(`Homepages: ${JSON.stringify(req.query)}`);
+})
+
+app.get('/run/:filterCodeId/:runtime', (req, res) => {
+    const runtime = req.params.runtime;
+    const filterCodeId = req.params.filterCodeId;
+    if (runtime != 'wasm' && runtime != 'js') {
+        res.send('Url pattern is /run/:filterCodeId/:runtime and :runtime := wasm || js');
+        return;
+    }
+    const runtimeFlag = (runtime == 'js') ? '--js' : '';
+    const nop = (_ = null) => null;
+    const before = new Date();
+    const mockRes = {
+        end: (msg) => {
+            if (!mockRes.finished) {
+                res.end(`Time lapsed: ${(new Date()) - before}\ndump:\n${msg}`);
+                mockRes.finished = true;
+            }
+        },
+        write: nop, flushHeaders: nop, setHeader: nop
+    };
+    childProcessResponse(mockRes, 'node', ['runtime.js', filterCodeId, runtimeFlag]);
 })
 
 app.listen(port, () => {

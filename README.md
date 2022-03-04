@@ -1,16 +1,29 @@
-# Main application
-1. Use asc to compile ts file into wasm, store wasm to `filter_code_wasm` folder
-2. Store a copy of the filter code in typescript at `filter_code_assemblyscript` folder
-# Deploying script & other scripts
-For deploying filter code in AssemblyScript. Copies the script to assemblyscript folder and compiled version in wasm older with the same name `appletID`:
-<br>`$ npm run deploy --src=example.ts --id=appletID` <br>
+# Pages
+<br>`/submitPage` - page for deploying your filter code and specifying the services needed<br>
+<br>`/` - nothing yet<br>
+<br>`/services/all` - returns name of all availabe services<br>
+<br>`/run/:filterCodeId/:runtime` - run filter code with the specified id, in the runtime specified (wasm or js)<br>
+# Output files from deploying
+1. Raw source code is stored in `filter_code_raw`
+2. Assemblyscript version of the raw code is generated with the needed declarations, it is then stored in dir `filter_code_assemblyscript`
+3. Using asc we compile the  TS/assmblyscript file into wasm, store wasm to `filter_code_wasm` folder together with a text format of the wasm (`.wat`)
+4. Using package `typescript` we transpile the TS file into a JS file and do some cleaning and create the imports needed. The JS file is then stored in `filter_code_javascript`
+# Usage
+For deploying filter code in AssemblyScript:
+<br>`$ node deploy.js *filter code src file* *Filter code ID of your choice* *used-service-1* ... *used-service-n*`<br>
 
 For playing around with assemblyscript compiler:
 <br>`$ npm run asc -- --help --otherflags` <br>
+
+For running filter code in wasm runtime:
+<br>`$ node runtime.js *Filter code ID*` <br>
+
+For running filter code in JS runtime:
+<br>`$ node runtime.js *Filter code ID* --js`<br>
 
 # Resources in no particular order
 ## AssemblyScript x wasmtime
 [hello world project](https://github.com/bytecodealliance/wasmtime/tree/main/docs/assemblyscript-hello-world) (wasmtime is run through os installation)
 
-## Running Wasm 
+## Running Wasm as JS embedding
 [Linker by deislabs](https://deislabs.io/posts/a-simple-wasm-linker-js/)
