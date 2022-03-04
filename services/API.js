@@ -17,3 +17,7 @@ exports.sendSMS = function () {
 exports.sendEmail = function () {
     console.log('Sending an email');
 }
+
+exports.randomNumber = function () {
+    return Math.random
+};
