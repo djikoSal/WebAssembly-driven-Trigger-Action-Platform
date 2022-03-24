@@ -45,7 +45,7 @@ function childProcessResponse(res, command, flags) {
     });
 }
 
-app.get('/deploy', (req, res) => {
+app.get('/msg/deploy', (req, res) => {
     const filterCodeId = req.query.filterCodeId;
     const userName = req.query.userName;
     const filterCode = req.query.filterCode;
@@ -81,6 +81,32 @@ app.get('/services/all', (req, res) => {
 app.get('/', (req, res) => {
     res.send(`Homepages: ${JSON.stringify(req.query)}`);
 })
+
+app.get('/filterCode/all', (req, res) => {
+    const fs = require('fs');
+    fs.readdir('filter_code_raw', (err, fileNames) => {
+        if (err) {
+            res.end();
+        } else {
+            res.send(fileNames);
+        }
+    });
+});
+
+app.get('/msg/run/:filterCodeId/:runtime', (req, res) => {
+    const runtime = req.params.runtime;
+    const filterCodeId = req.params.filterCodeId;
+    if (runtime != 'wasm' && runtime != 'js') {
+        res.send('Url pattern is /run/:filterCodeId/:runtime and :runtime := wasm || js');
+        return;
+    }
+    const runtimeFlag = (runtime == 'js') ? '--js' : '';
+    childProcessResponse(res, 'node', ['runtime.js', filterCodeId, runtimeFlag]);
+})
+
+app.get('/run', (req, res) => {
+    res.sendFile(path.join(__dirname, 'pages/runFilterCode.html'));
+});
 
 app.get('/run/:filterCodeId/:runtime', (req, res) => {
     const runtime = req.params.runtime;

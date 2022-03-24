@@ -42,7 +42,7 @@
             });
             console.log('services: ' + usedServices);
             const filterCodeEncoded = fitlerCodeSrc.replaceAll('\t', '%09').replaceAll('\n', '%0A');
-            const url = `/deploy?filterCodeId=${filterCodeId}&filterCode=${filterCodeEncoded}&userName=${userName}&services=${JSON.stringify(usedServices)}`;
+            const url = `/msg/deploy?filterCodeId=${filterCodeId}&filterCode=${filterCodeEncoded}&userName=${userName}&services=${JSON.stringify(usedServices)}`;
             const source = new EventSource(url);
             const outputTextarea = document.getElementById('outputTextarea');
             outputTextarea.value += `\nInitiated output console @ ${new Date()}\n\n`;

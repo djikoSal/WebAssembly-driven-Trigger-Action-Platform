@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Wasm x IoT - Trigger-action platform</title>
+    <script>
+        function loadAllFilterCode() {
+            const filterCodeList = document.getElementById('filterCodeList');
+            fetch('/filterCode/all').then((res) => {
+                return res.json();
+            }).then((filters) => {
+                filters.forEach((filterCodeId) => {
+                    let optionElement = document.createElement('option');
+                    optionElement.setAttribute('value', filterCodeId);
+                    optionElement.append(document.createTextNode(filterCodeId));
+                    filterCodeList.append(optionElement);
+                });
+            });
+        }
+        function onClick() {
+            const filterCodeId = document.getElementById('filterCodeList').value;
+            const runtimeOption = document.getElementById('runtimeOptionWasm').checked ? 'wasm' : 'js';
+            console.log('filterCodeId: ' + filterCodeId + '\nruntimeOption: ' + runtimeOption);
+            const url = `/msg/run/${filterCodeId}/${runtimeOption}`;
+            const source = new EventSource(url);
+            const outputTextarea = document.getElementById('outputTextarea');
+            outputTextarea.value += `\nInitiated output console @ ${new Date()}\n\n`;
+            outputTextarea.scrollTop = outputTextarea.scrollHeight;
+            const btn = document.getElementById('runBtn');
+            source.onmessage = (message) => {
+                console.log(`Received an event!`);
+                if (message.data) {
+                    outputTextarea.value += `$ ${message.data}\n`;
+                    outputTextarea.scrollTop = outputTextarea.scrollHeight;
+                }
+            };
+            source.onerror = (e) => {
+                console.log('eventsource failed, closing it.');
+                outputTextarea.value += '\nOutput console terminated.\n';
+                outputTextarea.scrollTop = outputTextarea.scrollHeight;
+                btn.removeAttribute('disabled');
+                source.close();
+            };
+            btn.setAttribute('disabled', '');
+        }
+    </script>
+</head>
+
+<body onload="loadAllFilterCode()">
+    <select id="filterCodeList" style="display: inline-block;"></select>
+    <button id="runBtn" onclick="onClick()">Run</button>
+    <input type="radio" id="runtimeOptionWasm" name="runtimeOption" value="wasm" checked>Wasm</input>
+    <input type="radio" name="runtimeOption" value="js">JS</input>
+    <br />
+    <label>Output: </label> <br />
+    <textarea disabled cols=" 80" rows="12" style=" color: white; background-color: black;" id="outputTextarea">
+        </textarea>
+</body>
+
+</html>
