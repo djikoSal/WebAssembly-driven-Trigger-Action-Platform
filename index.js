@@ -79,7 +79,7 @@ app.get('/services/all', (req, res) => {
 });
 
 app.get('/', (req, res) => {
-    res.send(`Homepages: ${JSON.stringify(req.query)}`);
+    res.sendFile(path.join(__dirname, 'pages/home.html'));
 })
 
 app.get('/filterCode/all', (req, res) => {
