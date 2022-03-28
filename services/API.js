@@ -21,3 +21,7 @@ exports.sendEmail = function () {
 exports.randomNumber = function () {
     return Math.random
 };
+
+exports.printNumber = function (x) {
+    console.log(x);
+}

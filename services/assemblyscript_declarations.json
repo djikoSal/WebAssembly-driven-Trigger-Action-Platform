@@ -3,5 +3,6 @@
     "skipAction": "declare function skipAction(): void;",
     "sendSMS": "declare function sendSMS(): void;",
     "sendEmail": "declare function sendEmail(): void;",
-    "randomNumber": "declare function randomNumber(): number;"
+    "randomNumber": "declare function randomNumber(): number;",
+    "printNumber": "declare function printNumber(x: number): void;"
 }
