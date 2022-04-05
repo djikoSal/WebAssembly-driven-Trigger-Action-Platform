@@ -64,7 +64,7 @@ function _transpileTS2JS(filterCodeId) {
     console.log(`Transpiling from TS 2 JS exiting with code '${exitCode}'.`);
 }
 
-function _postTranspileClean(jsPth, services) {
+function _postTranspile(jsPth, services) {
     const transpiledCode = fs.readFileSync(jsPth, 'utf-8');
     const startOfFunction = transpiledCode.indexOf('function filterCode');
     const endOfFunction = transpiledCode.lastIndexOf('exports.filterCode');
@@ -80,13 +80,27 @@ function _postTranspileClean(jsPth, services) {
     filterCodeJS += `${functionCode}\n`;
     filterCodeJS += 'exports.filterCode = filterCode\n';
     fs.writeFileSync(jsPth, filterCodeJS);
+
+    // save js body alone as well
+    fs.writeFileSync(jsPth + 'body', functionCode.split('\n').slice(1, -2).join('\n'));
+}
+
+function _addFilterCodeId2ServicesBinding(filterCodeId, services) {
+    let data = JSON.parse(fs.readFileSync('./services/filterCodeId2Services.json', 'utf-8'));
+    if (data[filterCodeId]) {
+        data[filterCodeId]['services'] = services;
+    } else {
+        data[filterCodeId] = { 'services': services };
+    }
+    fs.writeFileSync('./services/filterCodeId2Services.json', JSON.stringify(data));
 }
 
 function deploy(filterCodeRaw, filterCodeId, services) {
     _createTsFile(filterCodeRaw, filterCodeId, services);
     _compileToWasm(`filter_code_assemblyscript/${filterCodeId}.ts`, filterCodeId);
     _transpileTS2JS(filterCodeId);
-    _postTranspileClean(`filter_code_javascript/${filterCodeId}.js`, services);
+    _postTranspile(`filter_code_javascript/${filterCodeId}.js`, services);
+    _addFilterCodeId2ServicesBinding(filterCodeId, services);
 }
 
 if (require.main == module) { // if this is running standalone

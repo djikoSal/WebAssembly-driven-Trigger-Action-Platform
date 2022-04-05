@@ -1,0 +1,8 @@
+    var y = currentHour();
+    var x = 13;
+    if (y == x) {
+        sendSMS();
+    }
+    else {
+        skipAction();
+    }
