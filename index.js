@@ -101,6 +101,7 @@ app.get('/msg/run/:filterCodeId/:runtime', (req, res) => {
         return;
     }
     const runtimeFlag = (runtime == 'js') ? '--js' : '';
+    //require('./runtime').run(filterCodeId, runtimeFlag);
     childProcessResponse(res, 'node', ['runtime.js', filterCodeId, runtimeFlag]);
 })
 
@@ -116,18 +117,13 @@ app.get('/run/:filterCodeId/:runtime', (req, res) => {
         return;
     }
     const runtimeFlag = (runtime == 'js') ? '--js' : '';
-    const nop = (_ = null) => null;
-    const before = new Date();
-    const mockRes = {
-        end: (msg) => {
-            if (!mockRes.finished) {
-                res.end(`Time lapsed: ${(new Date()) - before}\ndump:\n${msg}`);
-                mockRes.finished = true;
-            }
-        },
-        write: nop, flushHeaders: nop, setHeader: nop
-    };
-    childProcessResponse(mockRes, 'node', ['runtime.js', filterCodeId, runtimeFlag]);
+    try {
+        require('./runtime').run(filterCodeId, runtimeFlag);
+    } catch (error) {
+        res.status(500).end(error);
+    }
+    res.status(200).end();
+    //childProcessResponse(mockRes, 'node', ['runtime.js', filterCodeId, runtimeFlag]);
 })
 
 app.listen(port, () => {
