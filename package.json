@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "node tests",
+    "load": "node test/load.js",
     "asc": "asc",
     "start": "node index.js",
     "deploy:copy": "node -e \"require('fs').copyFile(process.argv[1], `filter_code_assemblyscript/${process.argv[2]}.ts`, (err) => err ? console.log('err found: ' + err) : console.log('AssemblyScript version saved'))\"",

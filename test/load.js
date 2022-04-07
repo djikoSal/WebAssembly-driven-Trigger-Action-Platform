@@ -62,7 +62,7 @@ let interval2 = setTimeout(async () => {
                     '-c', 10, // concurrency
                     url
                 ]);
-                abTest.stdout.on('data', function (data) { fs.writeFileSync(`results/${FILTERCODE}-${RUNTIME}-${REQUESTCOUNT}-ab.txt`, data); });
+                abTest.stdout.on('data', function (data) { fs.writeFileSync(`test/results/${FILTERCODE}-${RUNTIME}-${REQUESTCOUNT}-ab.txt`, data); });
                 abTest.on('exit', async () => {
                     console.log('Load done.');
                     await new Promise(resolve => setTimeout(resolve, 500)); // wait
@@ -74,7 +74,7 @@ let interval2 = setTimeout(async () => {
                 //console.log(`Load done. Did ${reqCount} requests with success rate of ${sucessRate * 100} %`);
             } else if (id == 3) { // profiler stopped - collect results
                 console.log('Profiler stopped');
-                fs.writeFileSync(`results/${FILTERCODE}-${RUNTIME}-${REQUESTCOUNT}-profile.cpuprofile`,
+                fs.writeFileSync(`test/results/${FILTERCODE}-${RUNTIME}-${REQUESTCOUNT}-profile.cpuprofile`,
                     JSON.stringify(obj.result.profile));
                 let profile = Profile.createFromObject(obj.result.profile);
                 const prettyTargetNode = profile.formattedBottomUpProfile().find(n => n.functionName == FUNCTIONNAME);
