@@ -6,3 +6,5 @@ node_modules
 /*/build
 build
 filter_code_*
+log.txt
+test/results

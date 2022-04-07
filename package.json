@@ -25,7 +25,12 @@
     "@deislabs/wasm-linker-js": "^0.2.1",
     "as-wasi": "^0.4.6",
     "assemblyscript": "^0.19.23",
-    "express": "^4.17.3"
+    "axios": "^0.26.1",
+    "chromedriver": "^100.0.0",
+    "cpuprofile": "^0.1.1",
+    "express": "^4.17.3",
+    "request": "^2.88.2",
+    "ws": "^8.5.0"
   },
   "devDependencies": {
     "ts-node": "^10.5.0",
