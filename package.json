@@ -8,8 +8,8 @@
     "load": "node test/load.js",
     "asc": "asc",
     "start": "node index.js",
-    "deploy:copy": "node -e \"require('fs').copyFile(process.argv[1], `filter_code_assemblyscript/${process.argv[2]}.ts`, (err) => err ? console.log('err found: ' + err) : console.log('AssemblyScript version saved'))\"",
-    "deploy:compile": "asc %npm_config_src% -b filter_code_wasm/%npm_config_id%.wasm --",
+    "deploy:copy": "node -e \"require('fs').copyFile(process.argv[1], `filtercode/assemblyscript/${process.argv[2]}.ts`, (err) => err ? console.log('err found: ' + err) : console.log('AssemblyScript version saved'))\"",
+    "deploy:compile": "asc %npm_config_src% -b filtercode/wasm/%npm_config_id%.wasm --",
     "deploy": "npm run deploy:copy %npm_config_src% %npm_config_id% -- && npm run deploy:compile --"
   },
   "repository": {

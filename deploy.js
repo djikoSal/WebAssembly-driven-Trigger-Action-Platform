@@ -14,7 +14,7 @@ function _createTsFile(filterCodeRaw, filterCodeId, services) {
     tsSourceCode += "export function filterCode(): void {\n";
     tsSourceCode += `${filterCodeRaw}\n`;
     tsSourceCode += "}";
-    fs.writeFileSync(`filter_code_assemblyscript/${filterCodeId}.ts`, tsSourceCode);
+    fs.writeFileSync(`filtercode/assemblyscript/${filterCodeId}.ts`, tsSourceCode);
 }
 
 function _compileToWasm(pathToSourceFile, filterCodeId) {
@@ -23,8 +23,8 @@ function _compileToWasm(pathToSourceFile, filterCodeId) {
     asc.ready.then(() => {
         asc.main([
             pathToSourceFile,
-            "-b", `filter_code_wasm/${filterCodeId}.wasm`,
-            "-t", `filter_code_wasm/${filterCodeId}.wat` // textFile
+            "-b", `filtercode/wasm/${filterCodeId}.wasm`,
+            "-t", `filtercode/wasm/${filterCodeId}.wat` // textFile
         ], {
             //stdout: process.stdout, stderr: process.stderr
         }, function (err) {
@@ -44,9 +44,9 @@ function _transpileTS2JS(filterCodeId) {
         noImplicitAny: true,
         target: ts.ScriptTarget.ES5,
         module: ts.ModuleKind.CommonJS,
-        outDir: `filter_code_javascript`,
+        outDir: `filtercode/javascript`,
     };
-    let program = ts.createProgram([`filter_code_assemblyscript/${filterCodeId}.ts`], compilerOpts);
+    let program = ts.createProgram([`filtercode/assemblyscript/${filterCodeId}.ts`], compilerOpts);
     let emitResult = program.emit();
 
     let allDiagnostics = ts.getPreEmitDiagnostics(program).concat(emitResult.diagnostics);
@@ -97,9 +97,9 @@ function _addFilterCodeId2ServicesBinding(filterCodeId, services) {
 
 function deploy(filterCodeRaw, filterCodeId, services) {
     _createTsFile(filterCodeRaw, filterCodeId, services);
-    _compileToWasm(`filter_code_assemblyscript/${filterCodeId}.ts`, filterCodeId);
+    _compileToWasm(`filtercode/assemblyscript/${filterCodeId}.ts`, filterCodeId);
     _transpileTS2JS(filterCodeId);
-    _postTranspile(`filter_code_javascript/${filterCodeId}.js`, services);
+    _postTranspile(`filtercode/javascript/${filterCodeId}.js`, services);
     _addFilterCodeId2ServicesBinding(filterCodeId, services);
 }
 

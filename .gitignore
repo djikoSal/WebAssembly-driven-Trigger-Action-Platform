@@ -5,6 +5,6 @@
 node_modules
 /*/build
 build
-filter_code_*
+filtercode/*
 log.txt
 test/results

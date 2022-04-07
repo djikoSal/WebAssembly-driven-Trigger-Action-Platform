@@ -65,7 +65,7 @@ app.get('/msg/deploy', (req, res) => {
     if (!(filterCodeId && userName && filterCode)) {
         res.send('expected filterCodeId, userName & filterCode\nGot: ' + JSON.stringify(req.query));
     } else {
-        const tmpPth = `filter_code_raw/${filterCodeId}`;
+        const tmpPth = `filtercode/raw/${filterCodeId}`;
         //console.log('services: ' + services + " typeof: " + typeof (services));
         fs.writeFileSync(tmpPth, filterCode);
         childProcessResponse(res, 'node', ['deploy.js', tmpPth, filterCodeId].concat(services));
@@ -84,7 +84,7 @@ app.get('/', (req, res) => {
 
 app.get('/filterCode/all', (req, res) => {
     const fs = require('fs');
-    fs.readdir('filter_code_raw', (err, fileNames) => {
+    fs.readdir('filtercode/raw', (err, fileNames) => {
         if (err) {
             res.end();
         } else {

@@ -4,7 +4,7 @@ const fs = require('fs');
 const serviceAPIs = require('./services/API');
 
 function run_wasm(filterCodeId, services) {
-    fs.readFile(`filter_code_wasm/${filterCodeId}.wasm`, async function (err, data) {
+    fs.readFile(`filtercode/wasm/${filterCodeId}.wasm`, async function (err, data) {
         if (err) {
             console.log('Something went wrong when reading .wasm file:\n' + err);
             return;
@@ -30,9 +30,9 @@ function run_js(filterCodeId, services) {
      * Our js files are bascially standalone modules that we can run without eval,
      * however we want to do eval on only the fn body here because we want to show that
      * it is performance-wise better than the most secure method that is based on eval*/
-    //const jsBody = fs.readFileSync(`./filter_code_javascript/${filterCodeId}.jsbody`, 'utf-8');
+    //const jsBody = fs.readFileSync(`./filtercode/javascript/${filterCodeId}.jsbody`, 'utf-8');
     //with (services) eval(jsBody);
-    fs.readFile(`./filter_code_javascript/${filterCodeId}.jsbody`, 'utf-8', async function (err, jsBody) {
+    fs.readFile(`./filtercode/javascript/${filterCodeId}.jsbody`, 'utf-8', async function (err, jsBody) {
         if (err) {
             console.log('Something went wrong when reading .jsbody file:\n' + err);
             return;
