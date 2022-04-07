@@ -21,6 +21,9 @@ For running filter code in wasm runtime:
 For running filter code in JS runtime:
 <br>`$ node runtime.js *Filter code ID* --js`<br>
 
+For running a load test:
+<br>`$ npm run load *WebSocket url* *Filter code ID* *wasm || js* *number of requests*`<br>
+
 # Resources in no particular order
 ## AssemblyScript x wasmtime
 [hello world project](https://github.com/bytecodealliance/wasmtime/tree/main/docs/assemblyscript-hello-world) (wasmtime is run through os installation)
