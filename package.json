@@ -24,6 +24,7 @@
   "homepage": "https://github.com/djikoSal/fastly-IoT-Wasm#readme",
   "dependencies": {
     "@deislabs/wasm-linker-js": "^0.2.1",
+    "as-bind": "^0.8.2",
     "as-wasi": "^0.4.6",
     "assemblyscript": "^0.19.23",
     "axios": "^0.26.1",

@@ -4,5 +4,7 @@
     "sendSMS": "declare function sendSMS(): void;",
     "sendEmail": "declare function sendEmail(): void;",
     "randomNumber": "declare function randomNumber(): number;",
-    "printNumber": "declare function printNumber(x: number): void;"
+    "printNumber": "declare function printNumber(x: number): void;",
+    "ipAdresses": "declare function ipAdresses(): string;",
+    "consoleLog": "declare function consoleLog(x: string): void;"
 }

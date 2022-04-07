@@ -24,6 +24,7 @@ function _compileToWasm(pathToSourceFile, filterCodeId) {
     asc.ready.then(() => {
         asc.main([
             pathToSourceFile,
+            "--exportRuntime", "--transform", "as-bind", // https://github.com/torch2424/as-bind#quick-start
             "-b", `filtercode/wasm/${filterCodeId}.wasm`,
             "-t", `filtercode/wasm/${filterCodeId}.wat` // textFile
         ], {

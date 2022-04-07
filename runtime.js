@@ -1,5 +1,6 @@
 const fs = require('fs');
 const serviceAPIs = require('./services/API');
+const AsBind = require("as-bind/dist/as-bind.cjs.js");
 
 function run_wasm(filterCodeId, services) {
     fs.readFile(`filtercode/wasm/${filterCodeId}.wasm`, async function (err, data) {
@@ -8,10 +9,10 @@ function run_wasm(filterCodeId, services) {
             return;
         }
         // import object :: { "module name" : { fname1: f1, fname2: f2... }}
-        let importObject = { env: { abort: () => undefined } }; // need to include abort
+        let importObject = {}; //{ env: { abort: () => undefined } }; //? need to include abort
         importObject[filterCodeId] = services;
-        WebAssembly.instantiate(data, importObject).then(wasmModule => {
-            wasmModule.instance.exports.filterCode(); // make the call
+        AsBind.instantiate(data, importObject).then(instance => {
+            instance.exports.filterCode(); // make the call
         });
     });
 }

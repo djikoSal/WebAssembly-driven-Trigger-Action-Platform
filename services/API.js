@@ -25,3 +25,11 @@ exports.randomNumber = function () {
 exports.printNumber = function (x) {
     console.log(x);
 }
+
+exports.ipAdresses = function () {
+    return require('./1000ipadresses').data;
+}
+
+exports.consoleLog = function (x) {
+    console.log(x);
+}
