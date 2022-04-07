@@ -30,8 +30,15 @@ function run_js(filterCodeId, services) {
      * Our js files are bascially standalone modules that we can run without eval,
      * however we want to do eval on only the fn body here because we want to show that
      * it is performance-wise better than the most secure method that is based on eval*/
-    const jsBody = fs.readFileSync(`./filter_code_javascript/${filterCodeId}.jsbody`, 'utf-8');
-    with (services) eval(jsBody);
+    //const jsBody = fs.readFileSync(`./filter_code_javascript/${filterCodeId}.jsbody`, 'utf-8');
+    //with (services) eval(jsBody);
+    fs.readFile(`./filter_code_javascript/${filterCodeId}.jsbody`, 'utf-8', async function (err, jsBody) {
+        if (err) {
+            console.log('Something went wrong when reading .jsbody file:\n' + err);
+            return;
+        }
+        with (services) eval(jsBody);
+    });
     /*
     var result = function (code) {
         with (this) { return eval(code) }
