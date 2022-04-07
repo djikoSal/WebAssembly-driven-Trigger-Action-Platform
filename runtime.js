@@ -1,5 +1,3 @@
-const { Linker } = require('@deislabs/wasm-linker-js');
-const binaryen = require('binaryen');
 const fs = require('fs');
 const serviceAPIs = require('./services/API');
 
@@ -9,19 +7,12 @@ function run_wasm(filterCodeId, services) {
             console.log('Something went wrong when reading .wasm file:\n' + err);
             return;
         }
-
-        var runTimeLinker = new Linker();
-        var myModule = binaryen.readBinary(data).emitBinary(); // what more can we do with modules?
-
-        // Expose API based on access rights
-        Object.entries(services).map(([name, fn]) =>
-            //runTimeLinker.define(`moduleName`, fnName, actualFn)
-            runTimeLinker.define(`${filterCodeId}`, name, fn)
-        );
-
-        // instantiate our module
-        var runtime = await runTimeLinker.instantiate(myModule);
-        return runtime.instance.exports.filterCode(); // make the call
+        // import object :: { "module name" : { fname1: f1, fname2: f2... }}
+        let importObject = { env: { abort: () => undefined } }; // need to include abort
+        importObject[filterCodeId] = services;
+        WebAssembly.instantiate(data, importObject).then(wasmModule => {
+            wasmModule.instance.exports.filterCode(); // make the call
+        });
     });
 }
 
@@ -65,6 +56,7 @@ function run(filterCodeId, runtimeFlag) {
 }
 
 if (require.main == module) {
+    //(filterCodeId, runtime)
     run(process.argv[2], process.argv[3]);
 }
 

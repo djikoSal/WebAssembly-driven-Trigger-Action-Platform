@@ -3,7 +3,8 @@ const fs = require('fs');
 
 function _createTsFile(filterCodeRaw, filterCodeId, services) {
     const declarations = require('./services/assemblyscript_declarations.json');
-    var tsSourceCode = 'import "wasi";\n';
+    var tsSourceCode = "";
+    // tsSourceCode += 'import "wasi";\n'; //! Should not be wasi
     tsSourceCode += "//add assemblyscript imports\n";
     services.forEach((serviceName) => {
         const declaration = declarations[serviceName];
