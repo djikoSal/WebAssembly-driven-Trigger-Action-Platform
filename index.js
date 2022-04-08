@@ -25,23 +25,17 @@ function childProcessResponse(res, command, flags) {
     res.setHeader('Connection', 'keep-alive');
     res.flushHeaders(); // flush the headers to establish SSE with client
 
-    res.write('data: ' + command + " " + flags.join(" ") + "\n\n"); // initial
-    var spw = cp.spawn(command, flags);
-    spw.stdout.on('data', function (data) {
-        //console.log(`logging data: ${data.toString()}`);
+    res.write('data: $ ' + command + " " + flags.join(" ") + "\n\n"); // initial
+    const writeLineByLine = (data) => {
         if (!res.writableEnded) {
             (data.toString().split("\n")).forEach((line) => res.write('data: ' + line + "\n\n"));
         }
-    });
-
+    }
+    var spw = cp.spawn(command, flags);
+    spw.stdout.on('data', writeLineByLine);
+    spw.stderr.on('data', writeLineByLine);
     spw.on('close', function (code) {
         res.end();
-    });
-
-    spw.stderr.on('data', function (errData) {
-        if (!res.writableEnded) {
-            res.end('stderr: ' + errData);
-        }
     });
 }
 

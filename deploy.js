@@ -18,24 +18,32 @@ function _createTsFile(filterCodeRaw, filterCodeId, services) {
     fs.writeFileSync(`filtercode/assemblyscript/${filterCodeId}.ts`, tsSourceCode);
 }
 
-function _compileToWasm(pathToSourceFile, filterCodeId) {
+async function _compileToWasm(pathToSourceFile, filterCodeId) {
     //TODO: Make sure .wasm.map is not generated as well
+    console.log('Starting Wasm compilation.');
     const asc = require('assemblyscript/cli/asc');
-    asc.ready.then(() => {
-        asc.main([
-            pathToSourceFile,
-            "--exportRuntime", "--transform", "as-bind", // https://github.com/torch2424/as-bind#quick-start
-            "-b", `filtercode/wasm/${filterCodeId}.wasm`,
-            "-t", `filtercode/wasm/${filterCodeId}.wat` // textFile
-        ], {
-            //stdout: process.stdout, stderr: process.stderr
-        }, function (err) {
-            if (err) {
-                console.log('Could not compile to wasm:\n' + err);
-                return;
-            }
-        });
+    const tmpPromise = new Promise(async (resolve, reject) => {
+        await asc.ready; // wait for it to be ready
+        asc.main(
+            [
+                pathToSourceFile,
+                "--exportRuntime", "--transform", "as-bind", // https://github.com/torch2424/as-bind#quick-start
+                "-b", `filtercode/wasm/${filterCodeId}.wasm`,
+                "-t", `filtercode/wasm/${filterCodeId}.wat` // textFile
+            ],
+            { stdout: process.stdout, stderr: process.stderr },
+            function (err) {
+                if (err) {
+                    reject(err);
+                }
+                resolve(0);
+            });
     });
+
+    await tmpPromise
+        .then((_) => console.log('Sucessfully compiled to wasm!'))
+        .catch(err => { console.log("Wasm compilation failed."); });
+    console.log('Exiting Wasm compiler.');
 }
 
 function _transpileTS2JS(filterCodeId) {

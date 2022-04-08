@@ -51,12 +51,11 @@
             source.onmessage = (message) => {
                 console.log(`Received an event!`);
                 if (message.data) {
-                    outputTextarea.value += `$ ${message.data}\n`;
+                    outputTextarea.value += `${message.data}\n`;
                     outputTextarea.scrollTop = outputTextarea.scrollHeight;
                 }
             };
             source.onerror = (e) => {
-                console.log('eventsource failed, closing it.');
                 outputTextarea.value += '\nOutput console terminated.\n';
                 outputTextarea.scrollTop = outputTextarea.scrollHeight;
                 btn.removeAttribute('disabled');
