@@ -41,7 +41,7 @@
                     usedServices.push(child.id.split('-')[1]);
             });
             console.log('services: ' + usedServices);
-            const filterCodeEncoded = fitlerCodeSrc.replaceAll('\t', '%09').replaceAll('\n', '%0A').replaceAll('+', '%2b');
+            const filterCodeEncoded = encodeURIComponent(fitlerCodeSrc);
             const url = `/msg/deploy?filterCodeId=${filterCodeId}&filterCode=${filterCodeEncoded}&userName=${userName}&services=${JSON.stringify(usedServices)}`;
             const source = new EventSource(url);
             const outputTextarea = document.getElementById('outputTextarea');
