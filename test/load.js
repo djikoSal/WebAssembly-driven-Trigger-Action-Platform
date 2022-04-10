@@ -34,7 +34,7 @@ let interval = setTimeout(() => {
 
 let interval2 = setTimeout(async () => {
     const log = fs.openSync("log.txt", 'a')
-    const testLog = fs.openSync(`test/results/${FILTERCODE}-${RUNTIME}-${REQUESTCOUNT}.txt`, "a");
+    const testLog = fs.openSync(`test/results/${FILTERCODE}-${REQUESTCOUNT}-${RUNTIME}.txt`, "a");
     // Accessing chrome publish websocket address
     const response = await axios.get(`http://localhost:${port}/json`);
     const tab = response.data[0];
