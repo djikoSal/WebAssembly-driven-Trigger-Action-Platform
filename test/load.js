@@ -34,6 +34,7 @@ let interval = setTimeout(() => {
 
 let interval2 = setTimeout(async () => {
     const log = fs.openSync("log.txt", 'a')
+    const testLog = fs.openSync(`test/results/${FILTERCODE}-${RUNTIME}-${REQUESTCOUNT}.txt`, "a");
     // Accessing chrome publish websocket address
     const response = await axios.get(`http://localhost:${port}/json`);
     const tab = response.data[0];
@@ -46,15 +47,16 @@ let interval2 = setTimeout(async () => {
         ws.send(JSON.stringify({ id: 1, method: 'Profiler.enable' })); // start
     });
     ws.on('message', async function incoming(data) {
-        fs.writeSync(log, data + "\n")
         const obj = JSON.parse(data);
         if ("id" in obj) {
+            fs.writeSync(log, data + "\n")
             const id = obj.id;
             if (id == 1) { // profiler enabled
                 console.log('Profiler enabled');
                 ws.send(JSON.stringify({ id: 2, method: 'Profiler.start' })); // start
             } else if (id == 2) { // profiler started
                 // start the load
+                fs.writeSync(log, data + "\n")
                 console.log('Profiler started');
                 const url = `http://localhost:3000/run/${FILTERCODE}/${RUNTIME}`;
                 const abTest = spawn('ab', [
@@ -62,7 +64,7 @@ let interval2 = setTimeout(async () => {
                     '-c', 10, // concurrency
                     url
                 ]);
-                abTest.stdout.on('data', function (data) { fs.writeFileSync(`test/results/${FILTERCODE}-${RUNTIME}-${REQUESTCOUNT}-ab.txt`, data); });
+                abTest.stdout.on('data', function (data) { fs.writeSync(testLog, data); });
                 abTest.on('exit', async () => {
                     console.log('Load done.');
                     await new Promise(resolve => setTimeout(resolve, 500)); // wait
@@ -78,21 +80,20 @@ let interval2 = setTimeout(async () => {
                     JSON.stringify(obj.result.profile));
                 let profile = Profile.createFromObject(obj.result.profile);
                 const prettyTargetNode = profile.formattedBottomUpProfile().find(n => n.functionName == FUNCTIONNAME);
-                const targetNode = profile.nodes.filter(node => node.callFrame.functionName == FUNCTIONNAME);
-                if (targetNode.length != 1) throw Error("Target node not located properly");
-                console.log('Profiler summary =>');
-                console.log(`start time: ${profile.startTime}`);
-                console.log(`end time: ${profile.endTime}`);
-                console.log(`node count: ${profile.nodes.length}`);
-                console.log(`sampling interval: ${profile.samplingInterval}`);
-                console.log(`filter code self time: ${targetNode[0].selfTime}`);
-                console.log(`filter code total time: ${targetNode[0].totalTime}`);
-                console.log(`filter code hit count: ${targetNode[0].hitCount}`);
-                //console.log(`filter code node: ${JSON.stringify(targetNode[0])}`);
-                console.log(`pretty filter code self time: ${prettyTargetNode.selfTime}`);
-                console.log(`pretty filter code total time: ${prettyTargetNode.totalTime}`);
+                let resultsStr = "";
+                resultsStr += 'Profiler summary =>\n';
+                resultsStr += `start time: ${profile.startTime}\n`;
+                resultsStr += `end time: ${profile.endTime}\n`;
+                resultsStr += `node count: ${profile.nodes.length}\n`;
+                resultsStr += `sampling interval: ${profile.samplingInterval}\n`;
+                //resultsStr += `filter code hit count: ${targetNode[0].hitCount}\n`;
+                resultsStr += `filter code self time: ${prettyTargetNode.selfTime}\n`;
+                resultsStr += `filter code total time: ${prettyTargetNode.totalTime}\n`;
+                console.log(resultsStr);
+                fs.writeSync(testLog, resultsStr);
                 ws.send(JSON.stringify({ id: 4, method: 'Profiler.disable' })); // stop profiling
             } else if (id == 4) {
+                fs.writeSync(log, data + "\n")
                 ws.terminate();
             }
         }
