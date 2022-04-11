@@ -1,41 +1,42 @@
 const fs = require('fs');
 const serviceAPIs = require('./services/API');
 const AsBind = require("as-bind/dist/as-bind.cjs.js");
+const vm = require('vm');
 
 function run_wasm(filterCodeId, services) {
-    fs.readFile(`filtercode/wasm/${filterCodeId}.wasm`, async function (err, data) {
+    fs.readFile(`filtercode/wasm/${filterCodeId}.wasm`, function (err, data) {
         if (err) {
             console.log('Something went wrong when reading .wasm file:\n' + err);
             return;
         }
-        // import object :: { "module name" : { fname1: f1, fname2: f2... }}
-        let importObject = {}; //{ env: { abort: () => undefined } }; //? need to include abort
-        importObject[filterCodeId] = services;
-        AsBind.instantiate(data, importObject).then(instance => {
+        (function runFilterCode(code) {
+            // import object :: { "module name" : { fname1: f1, fname2: f2... }}
+            let importObject = {}; //{ env: { abort: () => undefined } }; //? need to include abort
+            importObject[filterCodeId] = services;
+            const instance = AsBind.instantiateSync(code, importObject);
             instance.exports.filterCode(); // make the call
-        });
+        })(data)
     });
 }
 
+
 function run_js(filterCodeId, services) {
-    /** Uses eval
-     * Our js files are bascially standalone modules that we can run without eval,
-     * however we want to do eval on only the fn body here because we want to show that
-     * it is performance-wise better than the most secure method that is based on eval*/
-    //const jsBody = fs.readFileSync(`./filtercode/javascript/${filterCodeId}.jsbody`, 'utf-8');
-    //with (services) eval(jsBody);
-    fs.readFile(`./filtercode/javascript/${filterCodeId}.jsbody`, 'utf-8', async function (err, jsBody) {
+    /** vm
+     * https://nodejs.org/api/vm.html
+    */
+    fs.readFile(`./filtercode/javascript/${filterCodeId}.jsbody`, 'utf-8', function (err, jsBody) {
         if (err) {
             console.log('Something went wrong when reading .jsbody file:\n' + err);
             return;
         }
-        with (services) eval(jsBody);
+        (function runFilterCode(code) {
+            const script = new vm.Script(code);
+            const context = services;
+            vm.createContext(context);
+            script.runInContext(context);
+            //script.runInNewContext(context); // doesn't matter much for us
+        })(jsBody)
     });
-    /*
-    var result = function (code) {
-        with (this) { return eval(code) }
-    }.call(services, jsBody); // .call(context, code)
-    */
 }
 
 function run(filterCodeId, runtimeFlag) {

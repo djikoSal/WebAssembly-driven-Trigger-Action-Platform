@@ -10,7 +10,7 @@ const Profile = require('cpuprofile').Profile;
 const FILTERCODE = (process.argv[3] || 'checkHour');
 const RUNTIME = (process.argv[4] || 'wasm');
 const REQUESTCOUNT = (process.argv[5] || 100);
-const FUNCTIONNAME = "run_" + RUNTIME;
+const FUNCTIONNAME = "runFilterCode";
 
 const port = 9229; // debug port
 const waitFor = 1000;// milliseconds
