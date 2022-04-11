@@ -19,7 +19,10 @@
         }
         function onClick() {
             const filterCodeId = document.getElementById('filterCodeList').value;
-            const runtimeOption = document.getElementById('runtimeOptionWasm').checked ? 'wasm' : 'js';
+            let runtimeOption = "wasm";
+            const runtimeCheckboxes = document.getElementsByName('runtimeOption').forEach((el) => {
+                if (el.checked) { runtimeOption = el.getAttribute('value'); }
+            });
             console.log('filterCodeId: ' + filterCodeId + '\nruntimeOption: ' + runtimeOption);
             const url = `/msg/run/${filterCodeId}/${runtimeOption}`;
             const source = new EventSource(url);
@@ -35,7 +38,6 @@
                 }
             };
             source.onerror = (e) => {
-                console.log('eventsource failed, closing it.');
                 outputTextarea.value += '\nOutput console terminated.\n';
                 outputTextarea.scrollTop = outputTextarea.scrollHeight;
                 btn.removeAttribute('disabled');
@@ -49,8 +51,10 @@
 <body onload="loadAllFilterCode()">
     <select id="filterCodeList" style="display: inline-block;"></select>
     <button id="runBtn" onclick="onClick()">Run</button>
-    <input type="radio" id="runtimeOptionWasm" name="runtimeOption" value="wasm" checked>Wasm</input>
-    <input type="radio" name="runtimeOption" value="js">JS</input>
+    <input type="radio" id="runtimeOptionjs-eval" name="runtimeOption" value="js-eval" checked>js-vm</input>
+    <input type="radio" id="runtimeOptionjs-vm" name="runtimeOption" value="js-vm" checked>js-eval</input>
+    <input type="radio" id="runtimeOptionjs-ivm" name="runtimeOption" value="js-ivm" checked>js-ivm</input>
+    <input type="radio" id="runtimeOptionWasm" name="runtimeOption" value="wasm" checked>wasm</input>
     <br />
     <label>Output: </label> <br />
     <textarea disabled cols=" 80" rows="12" style=" color: white; background-color: black;" id="outputTextarea">
