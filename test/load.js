@@ -76,8 +76,7 @@ let interval2 = setTimeout(async () => {
                 //console.log(`Load done. Did ${reqCount} requests with success rate of ${sucessRate * 100} %`);
             } else if (id == 3) { // profiler stopped - collect results
                 console.log('Profiler stopped');
-                fs.writeFileSync(`test/results/${FILTERCODE}-${RUNTIME}-${REQUESTCOUNT}-profile.cpuprofile`,
-                    JSON.stringify(obj.result.profile));
+                //fs.writeFileSync(`test/results/${FILTERCODE}-${RUNTIME}-${REQUESTCOUNT}-profile.cpuprofile`, JSON.stringify(obj.result.profile));
                 let profile = Profile.createFromObject(obj.result.profile);
                 const prettyTargetNode = profile.formattedBottomUpProfile().find(n => n.functionName == FUNCTIONNAME);
                 let resultsStr = "";
