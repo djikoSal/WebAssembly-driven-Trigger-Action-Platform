@@ -47,6 +47,24 @@ async function _compileToWasm(pathToSourceFile, filterCodeId) {
 }
 
 function _transpileTS2JS(filterCodeId) {
+    console.log('Starting simple transpile TS 2 JS');
+    const ts = require('typescript');
+    const source = fs.readFileSync(`filtercode/assemblyscript/${filterCodeId}.ts`, 'utf-8');
+    console.log(source);
+    let compilerOptions = {
+        noEmitOnError: true,
+        noImplicitAny: true,
+        target: ts.ScriptTarget.ES5,
+        module: ts.ModuleKind.CommonJS,
+        outDir: `filtercode/javascript`,
+    };
+    let result = ts.transpileModule(source, { compilerOptions });
+    //console.log(JSON.stringify(result));
+    fs.writeFileSync(`filtercode/javascript/${filterCodeId}.js`, result.outputText);
+    console.log(`Transpiling from TS 2 JS done.`);
+}
+
+function _oldTranspileTS2JS(filterCodeId) {
     console.log('Starting transpiling TS 2 JS');
     const ts = require('typescript');
     let compilerOpts = {
