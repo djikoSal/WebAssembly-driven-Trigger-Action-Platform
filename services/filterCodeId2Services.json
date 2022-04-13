@@ -1,1 +1,39 @@
-{"checkHour":{"services":["currentHour","skipAction","sendSMS"]},"fibCurrentHour":{"services":["currentHour","printNumber"]},"fibTest":{"services":["printNumber"]},"testText":{"services":["printNumber","ipAdresses"]},"nop":{"services":["printNumber"]},"testTextNoExportRuntime":{"services":["printNumber","ipAdresses"]},"logTest":{"services":["consoleLog"]},"myIpFilter":{"services":["printNumber","ipAdresses"]},"isPrime":{"services":["printNumber"]},"groupEventPlanning":{"services":["getMembersOneWeekEvents","consoleLog"]},"testDate":{"services":["upcomingClubEvents"]},"freeTimeSkip":{"services":["currentHour","currentDay","skipAction","consoleLog"]},"lowerCaseEmail":{"services":["emailBody","consoleLog"]},"eventsConflicts":{"services":["printNumber","upcomingClubEvents","upcomingMyEvents"]}}
+{
+    "nop": {
+        "services": [
+            "printNumber"
+        ]
+    },
+    "myIpFilter": {
+        "services": [
+            "printNumber",
+            "ipAdresses"
+        ]
+    },
+    "isPrime": {
+        "services": [
+            "printNumber"
+        ]
+    },
+    "freeTimeSkip": {
+        "services": [
+            "currentHour",
+            "currentDay",
+            "skipAction",
+            "consoleLog"
+        ]
+    },
+    "lowerCaseEmail": {
+        "services": [
+            "emailBody",
+            "consoleLog"
+        ]
+    },
+    "eventsConflicts": {
+        "services": [
+            "printNumber",
+            "upcomingClubEvents",
+            "upcomingMyEvents"
+        ]
+    }
+}
