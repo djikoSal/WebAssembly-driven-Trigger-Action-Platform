@@ -50,7 +50,6 @@ function _transpileTS2JS(filterCodeId) {
     console.log('Starting simple transpile TS 2 JS');
     const ts = require('typescript');
     const source = fs.readFileSync(`filtercode/assemblyscript/${filterCodeId}.ts`, 'utf-8');
-    console.log(source);
     let compilerOptions = {
         noEmitOnError: true,
         noImplicitAny: true,
