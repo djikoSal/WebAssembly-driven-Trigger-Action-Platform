@@ -3,6 +3,7 @@ const serviceAPIs = require('./services/API');
 const AsBind = require("as-bind/dist/as-bind.cjs.js");
 const vm = require('vm');
 const ivm = require('isolated-vm');
+const { VM } = require('vm2');
 
 function run_wasm(filterCodeId, services) {
     fs.readFile(`filtercode/wasm/${filterCodeId}.wasm`, function (err, data) {
@@ -69,6 +70,31 @@ function run_js_vm(filterCodeId, services) {
     });
 }
 
+function run_js_vm2(filterCodeId, services) {
+    /** vm2 with freezing
+     * https://github.com/patriksimek/vm2
+    */
+    fs.readFile(`./filtercode/javascript/${filterCodeId}.jsbody`, 'utf-8', function (err, jsBody) {
+        if (err) {
+            console.log('Something went wrong when reading .jsbody file:\n' + err);
+            return;
+        }
+        (function runFilterCode(code) {
+            const _vm = new VM({
+                //timeout: 1000,
+                //allowAsync: false,
+                sandbox: {} // things here can't be frozen
+            });
+            // make objects read-only
+            for (const [name, fn] of Object.entries(services)) {
+                _vm.freeze(fn, name); // https://github.com/patriksimek/vm2#read-only-objects-experimental
+            }
+            _vm.run(`${code}`);
+        })(jsBody)
+    });
+}
+
+
 function run_js_ivm(filterCodeId, services) {
     /** isolated-vm (ivm)
      * https://github.com/laverdet/isolated-vm/
@@ -105,6 +131,9 @@ function run(filterCodeId, runtimeFlag) {
     // run
     if (runtimeFlag == '--js-vm') {
         run_js_vm(filterCodeId, usedServices);
+    }
+    else if (runtimeFlag == '--js-vm2') {
+        run_js_vm2(filterCodeId, usedServices);
     }
     else if (runtimeFlag == '--js-ivm') {
         run_js_ivm(filterCodeId, usedServices);
