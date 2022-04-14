@@ -28,7 +28,23 @@ function run_js_eval(filterCodeId, services) {
             return;
         }
         (function runFilterCode(code) {
-            with (services) eval(code);
+            with (services) eval(`function myInnerFilterCode(){ ${code} } myInnerFilterCode();`);
+            //with (services) eval(`${code}`); //// Very bad perf
+        })(jsBody)
+    });
+}
+
+function run_js_function(filterCodeId, services) {
+    // Using js Function object
+    // https://stackoverflow.com/questions/4599857/are-eval-and-new-function-the-same-thing
+    // https://stackoverflow.com/questions/24354371/why-javascript-eval-is-slower-when-it-shouldnt-be
+    fs.readFile(`./filtercode/javascript/${filterCodeId}.jsbody`, 'utf-8', async function (err, jsBody) {
+        if (err) {
+            console.log('Something went wrong when reading .jsbody file:\n' + err);
+            return;
+        }
+        (function runFilterCode(code) {
+            (new Function(Object.keys(services).map(k => `${k} = this.${k}`), `${code}`)).bind(services)();
         })(jsBody)
     });
 }
@@ -43,7 +59,8 @@ function run_js_vm(filterCodeId, services) {
             return;
         }
         (function runFilterCode(code) {
-            const script = new vm.Script(code);
+            const script = new vm.Script(`function myInnerFilterCode(){ ${code} } myInnerFilterCode();`);
+            //const script = new vm.Script(code);
             const context = services;
             vm.createContext(context);
             script.runInContext(context);
@@ -94,6 +111,9 @@ function run(filterCodeId, runtimeFlag) {
     }
     else if (runtimeFlag == '--js-eval') {
         run_js_eval(filterCodeId, usedServices);
+    }
+    else if (runtimeFlag == '--js-function') {
+        run_js_function(filterCodeId, usedServices);
     }
     else if (runtimeFlag == '--wasm') {
         run_wasm(filterCodeId, usedServices);

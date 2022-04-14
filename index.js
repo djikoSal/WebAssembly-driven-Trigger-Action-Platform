@@ -90,23 +90,7 @@ app.get('/filterCode/all', (req, res) => {
 app.get('/msg/run/:filterCodeId/:runtime', (req, res) => {
     const runtime = req.params.runtime;
     const filterCodeId = req.params.filterCodeId;
-    let runtimeFlag = "";
-    if (runtime == 'wasm') {
-        runtimeFlag = '--wasm';
-    }
-    else if (runtime == 'js-eval') {
-        runtimeFlag = '--js-eval';
-    }
-    else if (runtime == 'js-vm') {
-        runtimeFlag = '--js-vm';
-    }
-    else if (runtime == 'js-ivm') {
-        runtimeFlag = '--js-ivm';
-    }
-    else {
-        res.send('Url pattern is /run/:filterCodeId/:runtime and :runtime := wasm || js-vm || js-ivm || js-eval');
-        return;
-    }
+    let runtimeFlag = `--${runtime}`;
     //require('./runtime').run(filterCodeId, runtimeFlag);
     childProcessResponse(res, 'node', ['runtime.js', filterCodeId, runtimeFlag]);
 })
@@ -118,28 +102,12 @@ app.get('/run', (req, res) => {
 app.get('/run/:filterCodeId/:runtime', (req, res) => {
     const runtime = req.params.runtime;
     const filterCodeId = req.params.filterCodeId;
-    let runtimeFlag = "";
-    if (runtime == 'wasm') {
-        runtimeFlag = '--wasm';
-    }
-    else if (runtime == 'js-eval') {
-        runtimeFlag = '--js-eval';
-    }
-    else if (runtime == 'js-vm') {
-        runtimeFlag = '--js-vm';
-    }
-    else if (runtime == 'js-ivm') {
-        runtimeFlag = '--js-ivm';
-    }
-    else {
-        res.send('Url pattern is /run/:filterCodeId/:runtime and :runtime := wasm || js-vm || js-ivm || js-eval');
-        return;
-    }
+    let runtimeFlag = `--${runtime}`;
     try {
         require('./runtime').run(filterCodeId, runtimeFlag);
         res.status(200).end();
     } catch (error) {
-        res.status(500).end(error);
+        res.status(500).end(error.toString());
     }
     //childProcessResponse(mockRes, 'node', ['runtime.js', filterCodeId, runtimeFlag]);
 })
