@@ -121,10 +121,10 @@ function run_js_ivm(filterCodeId, services) {
 function run(filterCodeId, runtimeFlag) {
     // Create the context - Expose list of services used regardless of runtime
     const usedServicesList = require('./services/filterCodeId2Services.json')[filterCodeId]["services"];
-    const usedServices = {}; //k: name, v: function
+    const usedServices = {}; // < fname, fn >
     for (let i = 0; i < usedServicesList.length; i++) {
         const name = usedServicesList[i];
-        const func = serviceAPIs[name];
+        const func = serviceAPIs[name].fn;
         usedServices[name] = func;
     }
 
