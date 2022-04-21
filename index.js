@@ -12,10 +12,18 @@ const path = require('path');
 const app = express();
 const port = 3000;
 
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'pages/home.html'));
+})
+
 app.get('/submitPage', (req, res) => {
     res.sendFile(path.join(__dirname, 'pages/submitPage.html'));
     //res.send('Hello World!' + ` ${JSON.stringify(req.query)}`);
 })
+
+app.get('/run', (req, res) => {
+    res.sendFile(path.join(__dirname, 'pages/runFilterCode.html'));
+});
 
 function childProcessResponse(res, command, flags) {
     //* Creates a childprocess for the command and will send data line by line (appropriate as event source)
@@ -68,13 +76,9 @@ app.get('/msg/deploy', (req, res) => {
 })
 
 app.get('/services/all', (req, res) => {
-    const listOfServices = Object.keys(require('./services/assemblyscript_declarations.json'));
+    const listOfServices = ['node-RED', ...Object.keys(require('./services/API.js'))];
     res.send(JSON.stringify(listOfServices));
 });
-
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'pages/home.html'));
-})
 
 app.get('/filterCode/all', (req, res) => {
     const fs = require('fs');
@@ -92,20 +96,19 @@ app.get('/msg/run/:filterCodeId/:runtime', (req, res) => {
     const filterCodeId = req.params.filterCodeId;
     let runtimeFlag = `--${runtime}`;
     //require('./runtime').run(filterCodeId, runtimeFlag);
-    childProcessResponse(res, 'node', ['runtime.js', filterCodeId, runtimeFlag]);
+    let reqQuery = req.query; // expects the form
+    let inputIngredientFlags = Object.keys(reqQuery).map(k => `--${k}=${reqQuery[k]}`)
+    childProcessResponse(res, 'node', ['runtime.js', filterCodeId, runtimeFlag].concat(inputIngredientFlags));
 })
-
-app.get('/run', (req, res) => {
-    res.sendFile(path.join(__dirname, 'pages/runFilterCode.html'));
-});
 
 app.get('/run/:filterCodeId/:runtime', (req, res) => {
     const runtime = req.params.runtime;
     const filterCodeId = req.params.filterCodeId;
     let runtimeFlag = `--${runtime}`;
     try {
-        require('./runtime').run(filterCodeId, runtimeFlag);
-        res.status(200).end();
+        let inputIngredients = req.query;
+        require('./runtime').run(filterCodeId, runtimeFlag, inputIngredients, res);
+        //res.status(200).end();
     } catch (error) {
         res.status(500).end(error.toString());
     }

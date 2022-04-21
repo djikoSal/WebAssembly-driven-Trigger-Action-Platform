@@ -23,8 +23,17 @@
             const runtimeCheckboxes = document.getElementsByName('runtimeOption').forEach((el) => {
                 if (el.checked) { runtimeOption = el.getAttribute('value'); }
             });
-            console.log('filterCodeId: ' + filterCodeId + '\nruntimeOption: ' + runtimeOption);
-            const url = `/msg/run/${filterCodeId}/${runtimeOption}`;
+
+            const _inputK = Array.from(document.getElementsByName('inputK'));
+            const _inputV = Array.from(document.getElementsByName('inputV'));
+            let ingredientsQuery = "?";
+            _inputK.map((el, i) => {
+                if (el.value) {
+                    ingredientsQuery += `${encodeURI(el.value)}=${encodeURI(_inputV[i].value || '')}&`
+                }
+            });
+            console.log('filterCodeId: ' + filterCodeId + '\nruntimeOption: ' + runtimeOption + "\n" + ingredientsQuery);
+            const url = `/msg/run/${filterCodeId}/${runtimeOption}${ingredientsQuery}`;
             const source = new EventSource(url);
             const outputTextarea = document.getElementById('outputTextarea');
             outputTextarea.value += `\nInitiated output console @ ${new Date()}\n\n`;
@@ -45,6 +54,38 @@
             };
             btn.setAttribute('disabled', '');
         }
+
+        function rmKeyValuePair() {
+            let el = document.getElementById("keyValuePairs");
+            let addBtn = el.removeChild(el.lastElementChild);
+            let rmBtn = el.removeChild(el.lastElementChild);
+            el.removeChild(el.lastElementChild);
+            el.removeChild(el.lastElementChild);
+            el.removeChild(el.lastElementChild);
+            if (el.childElementCount == 4) {
+                rmBtn.setAttribute('hidden', 'true');
+            }
+            el.appendChild(rmBtn);
+            el.appendChild(addBtn);
+        }
+
+        function addKeyValuePair() {
+            let el = document.getElementById("keyValuePairs");
+            let addBtn = el.removeChild(el.lastElementChild);
+            let rmBtn = el.removeChild(el.lastElementChild);
+            el.appendChild(document.createElement('br'));
+            var inputEl = document.createElement('input');
+            inputEl.setAttribute('name', 'inputK');
+            el.appendChild(inputEl);
+            el.appendChild(document.createTextNode(" "));
+            inputEl = document.createElement('input');
+            inputEl.setAttribute('name', 'inputV');
+            el.appendChild(inputEl);
+            el.appendChild(document.createTextNode(" "));
+            rmBtn.removeAttribute('hidden');
+            el.appendChild(rmBtn);
+            el.appendChild(addBtn);
+        }
     </script>
 </head>
 
@@ -58,6 +99,13 @@
     <input type="radio" id="runtimeOptionjs-vm2" name="runtimeOption" value="js-vm2" checked>js-vm2</input>
     <input type="radio" id="runtimeOptionjs-ivm" name="runtimeOption" value="js-ivm" checked>js-ivm</input>
     <input type="radio" id="runtimeOptionWasm" name="runtimeOption" value="wasm" checked>wasm</input>
+    <br /> <br />
+    <div id="keyValuePairs">
+        <label>ingredients:</label> <br />
+        <input type="text" name="inputK" /> <input type="text" name="inputV" />
+        <button onclick="rmKeyValuePair()" hidden>-</button>
+        <button onclick="addKeyValuePair()">+</button>
+    </div>
     <br />
     <label>Output: </label> <br />
     <textarea disabled cols=" 80" rows="12" style=" color: white; background-color: black;" id="outputTextarea">

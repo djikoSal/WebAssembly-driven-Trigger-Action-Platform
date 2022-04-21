@@ -11,7 +11,7 @@
             }).then((services) => {
                 services.forEach((serviceName) => {
                     let chkBox = document.createElement('input');
-                    chkBox.setAttribute('id', `service-${serviceName}`);
+                    chkBox.setAttribute('id', `service@${serviceName}`);
                     chkBox.setAttribute('type', 'checkbox')
                     servicesCheckbox.append(chkBox);
                     servicesCheckbox.append(document.createTextNode(serviceName));
@@ -38,7 +38,7 @@
             var usedServices = [];
             document.getElementById('servicesCheckbox').childNodes.forEach(child => {
                 if (child.type == 'checkbox' && child.checked)
-                    usedServices.push(child.id.split('-')[1]);
+                    usedServices.push(child.id.split('@')[1]);
             });
             console.log('services: ' + usedServices);
             const filterCodeEncoded = encodeURIComponent(fitlerCodeSrc);

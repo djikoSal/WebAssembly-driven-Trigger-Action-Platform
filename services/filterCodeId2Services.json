@@ -1,9 +1,4 @@
 {
-    "nop": {
-        "services": [
-            "printNumber"
-        ]
-    },
     "myIpFilter": {
         "services": [
             "printNumber",
@@ -19,7 +14,6 @@
         "services": [
             "currentHour",
             "currentDay",
-            "skipAction",
             "consoleLog"
         ]
     },
@@ -34,6 +28,12 @@
             "printNumber",
             "upcomingClubEvents",
             "upcomingMyEvents"
+        ]
+    },
+    "node-red-node-sentiment": {
+        "services": [
+            "node-RED",
+            "sentimentScore"
         ]
     }
 }

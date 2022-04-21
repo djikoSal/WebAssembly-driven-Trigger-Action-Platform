@@ -1,16 +1,29 @@
 //* Compile and deploy
 const fs = require('fs');
+const servicesLibrary = require('./services/API');
 
 function _createTsFile(filterCodeRaw, filterCodeId, services) {
-    const declarations = require('./services/assemblyscript_declarations.json');
     var tsSourceCode = "";
     // tsSourceCode += 'import "wasi";\n'; //! Should not be wasi
-    tsSourceCode += "//add assemblyscript imports\n";
+    tsSourceCode += "//add assemblyscript imports (defaults)\n";
+    tsSourceCode += "declare function addIngredient(k: string, v: string): void;\n"
+    tsSourceCode += "declare function getIngredient(k: string): string;\n"
+    tsSourceCode += "declare function skipAction(): void;\n"
+    tsSourceCode += "//add assemblyscript imports (external)\n";
     services.forEach((serviceName) => {
-        const declaration = declarations[serviceName];
-        if (!declaration)
-            throw Error(`The declaration/import statement for "${serviceName}" is missing`);
-        tsSourceCode += `${declaration}\n`;
+        if (serviceName == 'node-RED') {
+            const nodeREDfills = require('./services/node-RED-API.fills');
+            for (const REDname of Object.keys(nodeREDfills)) {
+                const REDobj = nodeREDfills[REDname];
+                tsSourceCode += `${REDobj.asc_import}\n`; // add node-RED declaration
+            }
+        } else {
+            console.log(serviceName);
+            const declaration = servicesLibrary[serviceName].asc_import;
+            if (!declaration)
+                throw Error(`The declaration/import statement for "${serviceName}" is missing`);
+            tsSourceCode += `${declaration}\n`;
+        }
     });
     tsSourceCode += "export function filterCode(): void {\n";
     tsSourceCode += `${filterCodeRaw}\n`;
@@ -91,11 +104,14 @@ function _oldTranspileTS2JS(filterCodeId) {
     console.log(`Transpiling from TS 2 JS exiting with code '${exitCode}'.`);
 }
 
-function _postTranspile(jsPth, services) {
+function _postTranspile(jsPth) {
     const transpiledCode = fs.readFileSync(jsPth, 'utf-8');
     const startOfFunction = transpiledCode.indexOf('function filterCode');
     const endOfFunction = transpiledCode.lastIndexOf('exports.filterCode');
     const functionCode = transpiledCode.substring(startOfFunction, endOfFunction);
+    /*
+    ! Our imports have to be created dynamically because the runtimes are not
+    ! context-free anymore. This means that we can't create a static js file
     var filterCodeJS = "";
     filterCodeJS += `// Insert some imports here that the filter code needs\n`;
     const serviceAPIs = require('./services/API');
@@ -107,9 +123,10 @@ function _postTranspile(jsPth, services) {
     filterCodeJS += `${functionCode}\n`;
     filterCodeJS += 'exports.filterCode = filterCode\n';
     fs.writeFileSync(jsPth, filterCodeJS);
-
+    */
     // save js body alone as well
     fs.writeFileSync(jsPth + 'body', functionCode.split('\n').slice(1, -2).join('\n'));
+    fs.unlinkSync(jsPth); //! delete javascript file and only keep .jsbody
 }
 
 function _addFilterCodeId2ServicesBinding(filterCodeId, services) {

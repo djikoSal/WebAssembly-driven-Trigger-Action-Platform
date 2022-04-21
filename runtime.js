@@ -1,11 +1,35 @@
 const fs = require('fs');
-const serviceAPIs = require('./services/API');
+const functionLibrary = require('./services/API');
 const AsBind = require("as-bind/dist/as-bind.cjs.js");
 const vm = require('vm');
 const ivm = require('isolated-vm');
 const { VM } = require('vm2');
 
-function run_wasm(filterCodeId, services) {
+function _Map2ObjStr(m) {
+    let o = "{";
+    m.forEach((v, k) => { o += `"${k}":"${v}",` });
+    return (o.substring(0, o.length - 1) + "}"); // replace last comma to closing bracket
+}
+
+function _addNodeREDfills(context) {
+    const nodeREDfills = require('./services/node-RED-API.fills');
+    const myREDNode = {
+        send: () => {
+            let resStr = 'Node RED sent msg: {\n';
+            context.ingredients.forEach((v, k) => { resStr += `${k}: ${v}\n` });
+            console.log(resStr + '}');
+        },
+        error: (errMsg) => { console.log('Node RED err: ' + errMsg); },
+        msgProperties: context.ingredients
+    };
+    for (let REDname of Object.keys(nodeREDfills)) {
+        const REDobj = nodeREDfills[REDname];
+        const REDfunc = REDobj.fn ? REDobj.fn : REDobj.getFn(myREDNode);
+        context.externalFunctions[REDname] = REDfunc; // add host call
+    }
+}
+
+function run_wasm(filterCodeId, services, onFinish) {
     fs.readFile(`filtercode/wasm/${filterCodeId}.wasm`, function (err, data) {
         if (err) {
             console.log('Something went wrong when reading .wasm file:\n' + err);
@@ -18,10 +42,11 @@ function run_wasm(filterCodeId, services) {
             const instance = AsBind.instantiateSync(code, importObject);
             instance.exports.filterCode(); // make the call
         })(data)
+        onFinish();
     });
 }
 
-function run_js_eval(filterCodeId, services) {
+function run_js_eval(filterCodeId, services, onFinish) {
     // No isolation, no nothing - just do eval
     fs.readFile(`./filtercode/javascript/${filterCodeId}.jsbody`, 'utf-8', async function (err, jsBody) {
         if (err) {
@@ -32,10 +57,11 @@ function run_js_eval(filterCodeId, services) {
             with (services) eval(`function myInnerFilterCode(){ ${code} } myInnerFilterCode();`);
             //with (services) eval(`${code}`); //// Very bad perf
         })(jsBody)
+        onFinish();
     });
 }
 
-function run_js_function(filterCodeId, services) {
+function run_js_function(filterCodeId, services, onFinish) {
     // Using js Function object
     // https://stackoverflow.com/questions/4599857/are-eval-and-new-function-the-same-thing
     // https://stackoverflow.com/questions/24354371/why-javascript-eval-is-slower-when-it-shouldnt-be
@@ -47,10 +73,11 @@ function run_js_function(filterCodeId, services) {
         (function runFilterCode(code) {
             (new Function(Object.keys(services).map(k => `${k} = this.${k}`), `${code}`)).bind(services)();
         })(jsBody)
+        onFinish();
     });
 }
 
-function run_js_vm(filterCodeId, services) {
+function run_js_vm(filterCodeId, services, onFinish) {
     /** vm
      * https://nodejs.org/api/vm.html
     */
@@ -67,10 +94,11 @@ function run_js_vm(filterCodeId, services) {
             script.runInContext(context);
             //script.runInNewContext(context); // doesn't matter much for us
         })(jsBody)
+        onFinish();
     });
 }
 
-function run_js_vm2(filterCodeId, services) {
+function run_js_vm2(filterCodeId, services, onFinish) {
     /** vm2 with freezing
      * https://github.com/patriksimek/vm2
     */
@@ -91,11 +119,12 @@ function run_js_vm2(filterCodeId, services) {
             }
             _vm.run(`${code}`);
         })(jsBody)
+        onFinish();
     });
 }
 
 
-function run_js_ivm(filterCodeId, services) {
+function run_js_ivm(filterCodeId, services, onFinish) {
     /** isolated-vm (ivm)
      * https://github.com/laverdet/isolated-vm/
      * https://npmmirror.com/package/isolated-vm/v/1.7.7
@@ -115,37 +144,73 @@ function run_js_ivm(filterCodeId, services) {
             }
             context.evalSync(`${jsBody}`); // run the filter code
         })(jsBody)
+        onFinish();
     });
 }
 
-function run(filterCodeId, runtimeFlag) {
-    // Create the context - Expose list of services used regardless of runtime
-    const usedServicesList = require('./services/filterCodeId2Services.json')[filterCodeId]["services"];
-    const usedServices = {}; // < fname, fn >
-    for (let i = 0; i < usedServicesList.length; i++) {
-        const name = usedServicesList[i];
-        const func = serviceAPIs[name].fn;
-        usedServices[name] = func;
+function run(filterCodeId, runtimeFlag, inputIngredients = {}, responseObj = undefined) {
+    // Get the external function dependencies our filter code has
+    const functionDependencies = require('./services/filterCodeId2Services.json')[filterCodeId]["services"];
+
+    //* This is our import object aka runtime context
+    const context = {
+        externalFunctions: {}, // ( fname, fn ), this is our table of host call functions
+        ingredients: new Map(), // < string, string >, similar to msg properties in node-RED
+    };
+    // add addIngredient & getIngredient default functions
+    context.externalFunctions["addIngredient"] = (kStr, vStr) => {
+        if (!context.ingredients.has(kStr.toString())) {
+            context.ingredients.set(kStr.toString(), vStr.toString());
+        } else { throw Error(`You can't override ingredients, ingredient "${kStr}" already exists`) }
+    }
+    context.externalFunctions["getIngredient"] = (kStr) => (context.ingredients.get(kStr) || "");
+    context.externalFunctions["skipAction"] = () => {
+        if (responseObj && !responseObj.finished) {
+            responseObj.status(204).end(); // no content
+        } else { console.log('Action Skipped!'); }
+    };
+    // Populate context ingredients with inputted ingredients
+    Object.keys(inputIngredients).forEach(k => context.ingredients.set(k, inputIngredients[k]));
+
+    // Add the external functions into externalFunctions
+    for (let i = 0; i < functionDependencies.length; i++) {
+        const name = functionDependencies[i];
+        if (name == 'node-RED') { // node-RED? then add all RED-API fills as host calls
+            _addNodeREDfills(context);
+        } else {
+            const func = functionLibrary[name].fn;
+            context.externalFunctions[name] = func;
+        }
     }
 
-    // run
+    /**
+     * onFinish is always called when filter code is done running
+     * If skipAction was not called explicitly then we will still
+     * respond with the ingredients/msg
+     */
+    const onFinish = () => {
+        if (responseObj && !responseObj.finished) {
+            responseObj.send(_Map2ObjStr(context.ingredients));
+        }
+    };
+
     if (runtimeFlag == '--js-vm') {
-        run_js_vm(filterCodeId, usedServices);
+        run_js_vm(filterCodeId, context.externalFunctions, onFinish);
     }
     else if (runtimeFlag == '--js-vm2') {
-        run_js_vm2(filterCodeId, usedServices);
+        run_js_vm2(filterCodeId, context.externalFunctions, onFinish);
     }
     else if (runtimeFlag == '--js-ivm') {
-        run_js_ivm(filterCodeId, usedServices);
+        run_js_ivm(filterCodeId, context.externalFunctions, onFinish);
     }
     else if (runtimeFlag == '--js-eval') {
-        run_js_eval(filterCodeId, usedServices);
+        run_js_eval(filterCodeId, context.externalFunctions, onFinish);
     }
     else if (runtimeFlag == '--js-function') {
-        run_js_function(filterCodeId, usedServices);
+        run_js_function(filterCodeId, context.externalFunctions, onFinish);
     }
     else if (runtimeFlag == '--wasm') {
-        run_wasm(filterCodeId, usedServices);
+        run_wasm(filterCodeId, context.externalFunctions, onFinish);
     } else {
         throw Error('Invalid runtime flag "' + runtimeFlag + '"');
     }
@@ -153,7 +218,16 @@ function run(filterCodeId, runtimeFlag) {
 
 if (require.main == module) {
     //(filterCodeId, runtime)
-    run(process.argv[2], process.argv[3]);
+    const inputIngredients = {};
+    let inputIngredientFlags = process.argv.slice(4);
+    if (inputIngredientFlags.length > 0) {
+        inputIngredientFlags.forEach(k => {
+            const [ingredientName, ingredientValue] = k.substring(2).split("=");
+            inputIngredients[ingredientName] = ingredientValue;
+        });
+    }
+
+    run(process.argv[2], process.argv[3], inputIngredients);
 }
 
 exports.run = run

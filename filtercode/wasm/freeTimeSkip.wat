@@ -1924,10 +1924,10 @@
   call $filtercode/assemblyscript/freeTimeSkip/currentDay
   local.set $1
   local.get $0
-  f64.const 11
+  f64.const 12
   f64.le
   local.get $0
-  f64.const 12
+  f64.const 11
   f64.ge
   i32.and
   if
@@ -1974,5 +1974,5 @@
    global.set $~lib/rt/itcms/visitCount
   end
  )
- ;; custom section "as-bind_bindings", size 391, contents: "{\"typeIds\":{\"~lib/string/String\":{\"id\":1,\"byteSize\":0}},\"importedFunctions\":{\"freeTimeSkip\":{\"currentHour\":{\"returnType\":\"f64\",\"parameters\":[]},\"currentDay\":{\"returnType\":\"f64\",\"parameters\":[]},\"skipAction\":{\"returnType\":\"void\",\"parameters\":[]},\"consoleLog\":{\"returnType\":\"void\",\"parameters\":[\"~lib/string/String\"]}}},\"exportedFunctions\":{\"filterCode\":{\"returnType\":\"void\",\"parameters\":[]}}}"
+ ;; custom section "as-bind_bindings", size 391, contents: "{\"typeIds\":{\"~lib/string/String\":{\"id\":1,\"byteSize\":0}},\"importedFunctions\":{\"freeTimeSkip\":{\"skipAction\":{\"returnType\":\"void\",\"parameters\":[]},\"currentHour\":{\"returnType\":\"f64\",\"parameters\":[]},\"currentDay\":{\"returnType\":\"f64\",\"parameters\":[]},\"consoleLog\":{\"returnType\":\"void\",\"parameters\":[\"~lib/string/String\"]}}},\"exportedFunctions\":{\"filterCode\":{\"returnType\":\"void\",\"parameters\":[]}}}"
 )

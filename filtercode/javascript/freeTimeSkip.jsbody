@@ -1,6 +1,6 @@
     var hour = currentHour();
     var day = currentDay();
-    if (hour <= 11 && hour >= 12) {
+    if (11 <= hour && hour <= 12) {
         skipAction(); // lunch
     }
     else if (day == 0 || day == 6) {
