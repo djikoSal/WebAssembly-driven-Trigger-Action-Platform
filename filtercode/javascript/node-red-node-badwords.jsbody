@@ -1,0 +1,9 @@
+    var text = RED_util_getMessageProperty("payload");
+    if (text.length > 0) {
+        if (!badWordsRegExpTest(text)) {
+            node_send_msg();
+        }
+        else {
+            skipAction();
+        }
+    }
