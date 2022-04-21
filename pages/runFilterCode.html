@@ -29,7 +29,7 @@
             let ingredientsQuery = "?";
             _inputK.map((el, i) => {
                 if (el.value) {
-                    ingredientsQuery += `${encodeURI(el.value)}=${encodeURI(_inputV[i].value || '')}&`
+                    ingredientsQuery += `${encodeURIComponent(el.value)}=${encodeURIComponent(_inputV[i].value || '')}&`
                 }
             });
             console.log('filterCodeId: ' + filterCodeId + '\nruntimeOption: ' + runtimeOption + "\n" + ingredientsQuery);
@@ -78,7 +78,8 @@
             inputEl.setAttribute('name', 'inputK');
             el.appendChild(inputEl);
             el.appendChild(document.createTextNode(" "));
-            inputEl = document.createElement('input');
+            inputEl = document.createElement('textarea');
+            inputEl.style.setProperty('vertical-align', 'top');
             inputEl.setAttribute('name', 'inputV');
             el.appendChild(inputEl);
             el.appendChild(document.createTextNode(" "));
@@ -102,7 +103,7 @@
     <br /> <br />
     <div id="keyValuePairs">
         <label>ingredients:</label> <br />
-        <input type="text" name="inputK" /> <input type="text" name="inputV" />
+        <input type="text" name="inputK" /> <textarea type="text" name="inputV" style="vertical-align: top;"></textarea>
         <button onclick="rmKeyValuePair()" hidden>-</button>
         <button onclick="addKeyValuePair()">+</button>
     </div>
