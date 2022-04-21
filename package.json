@@ -33,6 +33,7 @@
     "cpuprofile": "^0.1.1",
     "express": "^4.17.3",
     "isolated-vm": "^4.3.6",
+    "markdown-it": "^12.3.2",
     "request": "^2.88.2",
     "sentiment": "^2.1.0",
     "vm2": "^3.9.9",

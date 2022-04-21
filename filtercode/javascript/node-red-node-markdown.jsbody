@@ -1,0 +1,5 @@
+    var payload = RED_util_getMessageProperty("payload");
+    if (payload.length > 0) {
+        RED_util_setMessageProperty("payload", mdRender(payload));
+    }
+    node_send_msg();

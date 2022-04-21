@@ -120,5 +120,12 @@ module.exports = {
             return result;
         },
         asc_import: "declare function badWordsRegExpTest(msg: string): number;",
+    },
+    mdRender: {
+        fn: (text) => {
+            var md = require('markdown-it')({ html: true, linkify: true, typographer: true });
+            return md.render(text);
+        },
+        asc_import: "declare function mdRender(msg: string): string;",
     }
 }
