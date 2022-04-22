@@ -147,4 +147,22 @@ module.exports = {
         },
         asc_import: "declare function wordposGetPOS(msg: string): string;",
     },
+    dummyjsonParse: {
+        fn: (template, mockdata, seed) => {
+            const dummyjson = require('dummy-json');
+            if (seed.length > 0) { dummyjson.seed = seed; }
+            let myMockData = {};
+            try {
+                myMockData = mockdata.length > 0 ? JSON.parse(mockdata) : {};
+            } catch (_) { /* Well that sucks */ }
+
+            let result;
+            try {
+                result = dummyjson.parse(template, { mockdata: myMockData });
+            } catch (e) { result = `error: ${e.toString()}` }
+            return result;
+        },
+        asc_import: "declare function dummyjsonParse(template: string, mockdata: string, seed: string): string;",
+    },
+
 }

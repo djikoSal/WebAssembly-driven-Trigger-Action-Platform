@@ -1,0 +1,6 @@
+    var templateStr = RED_util_getMessageProperty("template");
+    var seedStr = RED_util_getMessageProperty("seed");
+    var mockdataStr = RED_util_getMessageProperty("mockdata");
+    var result = dummyjsonParse(templateStr, seedStr, mockdataStr);
+    RED_util_setMessageProperty("result", result);
+    node_send_msg();
