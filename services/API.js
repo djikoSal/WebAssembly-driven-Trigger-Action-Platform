@@ -127,5 +127,24 @@ module.exports = {
             return md.render(text);
         },
         asc_import: "declare function mdRender(msg: string): string;",
-    }
+    },
+    wordposGetPOS: {
+        fn: (text) => {
+            const wordpos = require('wordpos');
+            const wp = new wordpos();
+            let results;
+            let asyncDone = false;
+            wp.getPOS(text, (res) => {
+                results = res;
+                asyncDone = true;
+            });
+            require('deasync').loopWhile(() => !asyncDone);
+            let retStr = "";
+            Object.keys(results).forEach(k => {
+                retStr += `${k}:[${results[k].toString()}]\n`;
+            });
+            return retStr;
+        },
+        asc_import: "declare function wordposGetPOS(msg: string): string;",
+    },
 }
