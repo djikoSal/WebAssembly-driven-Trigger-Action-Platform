@@ -1,9 +1,0 @@
-let content = emailBody();
-let ABC = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-let abc = "abcdefghijklmnopqrstuvwxyz";
-
-for(let i = 0; i < ABC.length; i++){
-	content = content.replaceAll(ABC.charAt(i), abc.charAt(i));
-}
-
-consoleLog(content);
