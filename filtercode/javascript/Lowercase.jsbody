@@ -1,0 +1,7 @@
+    var content = getIngredient("input");
+    var ABC = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    var abc = "abcdefghijklmnopqrstuvwxyz";
+    for (var i = 0; i < ABC.length; i++) {
+        content = content.replaceAll(ABC.charAt(i), abc.charAt(i));
+    }
+    addIngredient("inputLowercase", content);
