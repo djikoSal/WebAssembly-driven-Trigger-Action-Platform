@@ -1,0 +1,19 @@
+    // get excerpt from text that has the keys, 10 words before and after
+    var longStr = getIngredient("text");
+    var keyStr = getIngredient("key");
+    if (!(longStr.length > 0 && keyStr.length > 0)) {
+        addIngredient("ExcerptError", "Null input: Got \"text\":".concat(longStr, ", \"key\":").concat(keyStr));
+    }
+    else {
+        var words = longStr.split(" ");
+        for (var i = 0; i < words.length; i++) {
+            if (words.includes(keyStr)) {
+                var start = (i - 10) > 0 ? (i - 10) : 0;
+                var end = (i + 10) < words.length ? (i + 10) : words.length;
+                var resultWords = words.slice(start, end);
+                var resultStr = resultWords.join(" ");
+                addIngredient("excerpt", resultStr);
+                break;
+            }
+        }
+    }

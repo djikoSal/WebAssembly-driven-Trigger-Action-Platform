@@ -1,0 +1,9 @@
+let day = currentDay();
+
+if(day == 0 || day == 6){
+	skipAction(); // I'm not working
+}
+else {
+	sendSMS();
+	consoleLog("Not skipping (for debugging)");
+}

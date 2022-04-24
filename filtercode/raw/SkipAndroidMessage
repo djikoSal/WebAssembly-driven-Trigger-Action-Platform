@@ -1,0 +1,13 @@
+let hour = currentHour();
+let day = currentDay();
+
+if(11 <= hour && hour <= 12){
+	skipAction(); // lunch
+}
+else if(day == 0 || day == 6){
+	skipAction(); // I'm not working
+}
+else {
+	sendSMS();
+	consoleLog("Not skipping (for debugging)");
+}
