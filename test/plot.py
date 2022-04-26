@@ -1,3 +1,4 @@
+from cProfile import run
 import os
 import matplotlib.pyplot as plt
 import numpy as np
@@ -13,9 +14,23 @@ runtimes = [result.split('-')[2][:-4] for result in results]
 data = {} # {filterCodeId: {runtime: {reqCount: [5000], totalTime: [1337]}}}
 for i in range(len(fileNames)):
     fileName = fileNames[i]
-    filterCodeId = fileName.split('-')[0]
-    reqCount = int(fileName.split('-')[1])
-    runtime = fileName[len('-'.join(fileName.split('-')[:2])) + 1:-4]
+    filterCodeId = ""
+    for w in fileName.split('-'):
+        if w.isnumeric():
+            reqCount = int(w)
+            break
+        else:
+            filterCodeId += w
+
+    if not reqCount: Exception("Could not find request count from file: " + fileNames[i])
+    runtime = ""
+    tmp = fileName[:-4].split('-')
+    tmp.reverse()
+    for w in tmp:
+        if w.isnumeric():
+            break
+        else:
+            runtime = w + '-' + runtime if runtime is not "" else w
     label = f"{filterCodeId}" # our label
     if label not in data:
         data[label] = {}
@@ -33,11 +48,11 @@ for i in range(len(fileNames)):
 
 labels = data.keys()
 x = np.arange(len(labels))  # the label locations
-width = 0.2  # the width of the bars
+width = 0.1  # the width of the bars
 
 fig, ax = plt.subplots()
 rectsLst = []
-runtimes = ['wasm', 'js-eval', 'js-vm', 'js-ivm']
+runtimes = ['wasm', 'js-eval', 'js-vm', 'js-ivm', 'js-vm2', 'js-function']
 print('looking for runtimes', runtimes)
 
 runtime2totTime = {rt: [] for rt in runtimes}
@@ -45,7 +60,7 @@ for filterCodeId in data:
     for runtime in data[filterCodeId]:
         runtime2totTime[runtime].append(data[filterCodeId][runtime]['totalTime'][0])
 
-x_offset = (- width * len(runtime) / 2)
+x_offset = (- width * len(runtimes) / 2)
 for runtime in runtime2totTime:
     totTimes =  runtime2totTime[runtime]
     print(totTimes, runtime)
@@ -59,6 +74,6 @@ ax.set_xticks(x, labels)
 ax.set_yticklabels([])
 ax.legend()
 
-[ax.bar_label(rect, padding=3) for rect in rectsLst]
-#fig.tight_layout()
+[ax.bar_label(rect, padding=5) for rect in rectsLst]
+fig.tight_layout()
 plt.show()
