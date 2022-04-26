@@ -1,0 +1,28 @@
+    var Longitude = getIngredient("Longitude");
+    var Latitude = getIngredient("Latitude");
+    consoleLog(Longitude);
+    consoleLog(Latitude);
+    // https://www.movable-type.co.uk/scripts/latlong.html
+    var lat1 = parseFloat(Latitude.substring(2, Latitude.length - 2));
+    var lon1 = parseFloat(Longitude.substring(2, Longitude.length - 2));
+    // home
+    var lat2 = 59.34882930194417;
+    var lon2 = 18.063593753239786;
+    var R = 6371e3; // metres
+    var φ1 = lat1 * Math.PI / 180.0; // φ, λ in radians
+    var φ2 = lat2 * Math.PI / 180.0;
+    var Δφ = (lat2 - lat1) * Math.PI / 180.0;
+    var Δλ = (lon2 - lon1) * Math.PI / 180.0;
+    var a = Math.sin(Δφ / 2.0) * Math.sin(Δφ / 2.0) +
+        Math.cos(φ1) * Math.cos(φ2) *
+            Math.sin(Δλ / 2.0) * Math.sin(Δλ / 2.0);
+    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1.0 - a));
+    var d = R * c; // in metres
+    // https://en.wikipedia.org/wiki/Preferred_walking_speed
+    var mPerMin = 1.42 * 60.0; // speed
+    var duration_minutes = Math.ceil(d / mPerMin);
+    var distance_km = (Math.trunc(d / 100.0) / 10.0); // one decimal precision
+    printNumber(d);
+    printNumber(duration_minutes);
+    printNumber(distance_km);
+    createMyWalkingEvent(duration_minutes.toString(), distance_km.toString(), "");
