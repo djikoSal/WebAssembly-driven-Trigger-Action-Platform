@@ -175,5 +175,16 @@ module.exports = {
         },
         asc_import: "declare function createMyWalkingEvent(value1: string, value2: string, value3: string): void;",
     },
+    callWebHookIFTTT: {
+        fn: (eventName, value1, value2, value3) => {
+            var asyncDone = false;
+            const axios = require('axios').default;
+            axios.get(`https://maker.ifttt.com/trigger/${eventName}/with/key/bYyovHo4w7WkPZuetPQ342?value1=${value1}&value2=${value2}&value3=${value3}`).then(res => {
+                asyncDone = true;
+            });
+            require('deasync').loopWhile(() => !asyncDone);
+        },
+        asc_import: "declare function callWebHookIFTTT(eventName: string, value1: string, value2: string, value3: string): void;",
+    },
 
 }

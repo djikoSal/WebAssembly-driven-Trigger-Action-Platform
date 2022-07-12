@@ -1,0 +1,11 @@
+    var phrase = getIngredient("phrase");
+    consoleLog(phrase);
+    var words = phrase.split(" ");
+    var lastIdx = words.lastIndexOf("scheduled");
+    var date = "";
+    var title = phrase;
+    if (lastIdx > 0) {
+        title = (words.slice(0, lastIdx)).join(" ");
+        date = (words.slice(lastIdx)).join(" ");
+    }
+    callWebHookIFTTT("create_reminder", title, "My special list", date);

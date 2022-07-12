@@ -122,7 +122,48 @@
         "services": [
             "printNumber",
             "consoleLog",
-            "createMyWalkingEvent"
+            "callWebHookIFTTT"
+        ]
+    },
+    "mySkipFunction": {
+        "services": [
+            "currentHour",
+            "currentDay",
+            "consoleLog"
+        ]
+    },
+    "string-base64": {
+        "services": [
+            "consoleLog"
+        ]
+    },
+    "infiniteLoop": {
+        "services": []
+    },
+    "mySkipApplication": {
+        "services": [
+            "currentHour",
+            "currentDay",
+            "consoleLog"
+        ]
+    },
+    "mySkip": {
+        "services": [
+            "currentHour",
+            "currentDay",
+            "consoleLog"
+        ]
+    },
+    "checkRainTomorrow": {
+        "services": [
+            "consoleLog",
+            "callWebHookIFTTT"
+        ]
+    },
+    "scheduleReminder": {
+        "services": [
+            "consoleLog",
+            "callWebHookIFTTT"
         ]
     }
 }

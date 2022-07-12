@@ -7,6 +7,7 @@ const fs = require("fs");
 const Profile = require('cpuprofile').Profile;
 //const req = require("request"); // deprecated
 
+const WSURL = process.argv[2]
 const FILTERCODE = (process.argv[3] || 'checkHour');
 const RUNTIME = (process.argv[4] || 'wasm');
 const REQUESTCOUNT = (process.argv[5] || 100);
@@ -19,7 +20,7 @@ var binPath = chromedriver.path; // path to chromedriver executable
 const chrome = spawn(binPath, [
     '--remote-debugging-port=' + port,
     '--user-data-dir=temp',
-    process.argv[2]
+    WSURL
 ]);
 
 chrome.stdout.on('data', function (data) {
@@ -76,7 +77,7 @@ let interval2 = setTimeout(async () => {
                 //console.log(`Load done. Did ${reqCount} requests with success rate of ${sucessRate * 100} %`);
             } else if (id == 3) { // profiler stopped - collect results
                 console.log('Profiler stopped');
-                //fs.writeFileSync(`test/results/${FILTERCODE}-${RUNTIME}-${REQUESTCOUNT}-profile.cpuprofile`, JSON.stringify(obj.result.profile));
+                fs.writeFileSync(`test/results/${FILTERCODE}-${RUNTIME}-${REQUESTCOUNT}-profile.cpuprofile`, JSON.stringify(obj.result.profile));
                 let profile = Profile.createFromObject(obj.result.profile);
                 const prettyTargetNode = profile.formattedBottomUpProfile().find(n => n.functionName == FUNCTIONNAME);
                 let resultsStr = "";

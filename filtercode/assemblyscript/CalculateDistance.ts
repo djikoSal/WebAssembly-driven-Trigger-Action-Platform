@@ -5,7 +5,7 @@ declare function skipAction(): void;
 //add assemblyscript imports (external)
 declare function printNumber(x: number): void;
 declare function consoleLog(x: string): void;
-declare function createMyWalkingEvent(value1: string, value2: string, value3: string): void;
+declare function callWebHookIFTTT(eventName: string, value1: string, value2: string, value3: string): void;
 export function filterCode(): void {
 var Longitude = getIngredient("Longitude");
 var Latitude = getIngredient("Latitude");
@@ -45,5 +45,8 @@ printNumber(d);
 printNumber(duration_minutes);
 printNumber(distance_km);
 
-createMyWalkingEvent(duration_minutes.toString(), distance_km.toString(), "");
+const description = "You have about " + distance_km.toString() + " km to walk";
+const title = "Start walking home!";
+const duration = duration_minutes.toString();
+callWebHookIFTTT("create_event", title, duration, description);
 }

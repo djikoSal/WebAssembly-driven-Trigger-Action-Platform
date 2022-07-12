@@ -1,3 +1,4 @@
+# For plotting one simple plot of all experiments from results folder
 from cProfile import run
 import os
 import matplotlib.pyplot as plt
@@ -60,20 +61,24 @@ for filterCodeId in data:
     for runtime in data[filterCodeId]:
         runtime2totTime[runtime].append(data[filterCodeId][runtime]['totalTime'][0])
 
-x_offset = (- width * len(runtimes) / 2)
+x_offset = (-width * (len(runtimes) - 1) / 2)
 for runtime in runtime2totTime:
     totTimes =  runtime2totTime[runtime]
     print(totTimes, runtime)
-    rectsLst.append(ax.bar(x + x_offset, totTimes, width, label=runtime))
+    roundedTimes = [round( x / 1000, 1) for x in totTimes]
+    rect = ax.bar(x + x_offset, roundedTimes, width, label=runtime)
+    ax.bar_label(rect, padding=5, fontsize=8, rotation=70)
     x_offset += width
 
 # Add some text for labels, title and custom x-axis tick labels, etc.
-ax.set_ylabel('Time spent running filter code (ms)')
-ax.set_title('Filter code in different runtimes')
+fig.text(0.04, 0.5, 'Time spent running filter code (seconds)', va='center', rotation='vertical')
+ax.set_title('Benchmark Test')
 ax.set_xticks(x, labels)
-ax.set_yticklabels([])
+#ax.tick_params(axis='x', bottom=False)
+#ax.set_yticklabels([])
+#ax2.set_yticklabels([])
+#ax.legend(loc='upper left')
 ax.legend()
 
-[ax.bar_label(rect, padding=5) for rect in rectsLst]
 fig.tight_layout()
 plt.show()
