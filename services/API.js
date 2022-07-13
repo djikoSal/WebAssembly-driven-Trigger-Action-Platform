@@ -168,7 +168,7 @@ module.exports = {
         fn: (value1, value2, value3) => {
             var asyncDone = false;
             const axios = require('axios').default;
-            axios.get(`https://maker.ifttt.com/trigger/start_walking/with/key/bYyovHo4w7WkPZuetPQ342?value1=${value1}&value2=${value2}&value3=${value3}`).then(res => {
+            axios.get(`https://maker.ifttt.com/trigger/start_walking/with/key/yourkey?value1=${value1}&value2=${value2}&value3=${value3}`).then(res => {
                 asyncDone = true;
             });
             require('deasync').loopWhile(() => !asyncDone);
@@ -179,7 +179,7 @@ module.exports = {
         fn: (eventName, value1, value2, value3) => {
             var asyncDone = false;
             const axios = require('axios').default;
-            axios.get(`https://maker.ifttt.com/trigger/${eventName}/with/key/bYyovHo4w7WkPZuetPQ342?value1=${value1}&value2=${value2}&value3=${value3}`).then(res => {
+            axios.get(`https://maker.ifttt.com/trigger/${eventName}/with/key/yourkey?value1=${value1}&value2=${value2}&value3=${value3}`).then(res => {
                 asyncDone = true;
             });
             require('deasync').loopWhile(() => !asyncDone);
